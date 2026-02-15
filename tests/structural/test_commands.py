@@ -1,4 +1,4 @@
-"""Tests for Interpath command structure."""
+"""Tests for interpath command structure."""
 
 from pathlib import Path
 

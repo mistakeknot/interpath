@@ -1,4 +1,4 @@
-# Interpath
+# interpath
 
 Product artifact generator for Claude Code — generates roadmaps, PRDs, vision docs, changelogs, and status reports from beads state, brainstorms, and project context.
 

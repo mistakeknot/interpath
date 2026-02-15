@@ -1,4 +1,4 @@
-"""Shared fixtures for Interpath structural tests."""
+"""Shared fixtures for interpath structural tests."""
 
 import json
 from pathlib import Path
@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def project_root() -> Path:
-    """Path to the Interpath repository root."""
+    """Path to the interpath repository root."""
     return Path(__file__).resolve().parent.parent.parent
 
 

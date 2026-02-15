@@ -1,4 +1,4 @@
-"""Tests for Interpath plugin structure."""
+"""Tests for interpath plugin structure."""
 
 import json
 from pathlib import Path

@@ -1,8 +1,8 @@
-# Interpath — Development Guide
+# interpath — Development Guide
 
 ## Architecture
 
-Interpath is a product artifact generator for Claude Code. It synthesizes project documentation from multiple sources:
+interpath is a product artifact generator for Claude Code. It synthesizes project documentation from multiple sources:
 
 - **Beads** — issue tracker state (open/closed/blocked counts, priorities)
 - **Brainstorms** — design explorations in `docs/brainstorms/`
@@ -48,7 +48,7 @@ SKILL.md (router)
 ## Testing
 
 ```bash
-cd /root/projects/interpath
+cd /root/projects/Interverse/plugins/interpath
 uv run pytest tests/structural/ -v
 ```
 
@@ -62,5 +62,5 @@ uv run pytest tests/structural/ -v
 
 1. Edit skill/command files
 2. Run structural tests: `uv run pytest tests/structural/ -v`
-3. Test locally: `claude --plugin-dir /root/projects/interpath`
+3. Test locally: `claude --plugin-dir /root/projects/Interverse/plugins/interpath`
 4. Bump version and publish: `scripts/bump-version.sh <version>`

@@ -1,4 +1,4 @@
-"""Tests for Interpath skill structure."""
+"""Tests for interpath skill structure."""
 
 from pathlib import Path
 

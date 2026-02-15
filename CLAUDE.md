@@ -1,4 +1,4 @@
-# Interpath
+# interpath
 
 > See `AGENTS.md` for full development guide.
 
@@ -10,7 +10,7 @@ Product artifact generator — 1 skill, 5 commands, 0 agents, 0 hooks, 0 MCP ser
 
 ```bash
 # Test locally
-claude --plugin-dir /root/projects/interpath
+claude --plugin-dir /root/projects/Interverse/plugins/interpath
 
 # Validate structure
 ls skills/*/SKILL.md | wc -l          # Should be 1
@@ -26,4 +26,4 @@ python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))"  # Manif
 - Discovery phase is shared across all artifact types
 - Graceful degradation — missing sources (no beads, no PRD) are silently skipped
 - Output goes to `docs/` in the target project
-- No hooks — Interpath is invoked on-demand, not event-driven
+- No hooks — interpath is invoked on-demand, not event-driven

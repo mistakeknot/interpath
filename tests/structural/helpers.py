@@ -1,4 +1,4 @@
-"""Shared helpers for Interpath structural tests."""
+"""Shared helpers for interpath structural tests."""
 
 import yaml
 
