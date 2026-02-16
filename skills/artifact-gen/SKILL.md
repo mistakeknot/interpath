@@ -5,6 +5,8 @@ description: Generate product artifacts (roadmaps, PRDs, vision docs, changelogs
 
 # Artifact Generator
 
+<!-- compact: SKILL-compact.md — if it exists in this directory, load it instead of following the multi-file instructions below. The compact version contains the same algorithm in a single file. -->
+
 You are generating a product artifact. Follow these steps exactly.
 
 ## Step 1: Determine Artifact Type
