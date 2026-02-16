@@ -17,8 +17,8 @@ claude plugin install interpath@interagency-marketplace
 | `/interpath:roadmap` | Generate or refresh project roadmap |
 | `/interpath:prd` | Generate or refresh PRD |
 | `/interpath:vision` | Generate or refresh vision doc |
-| `/interpath:changelog` | Generate changelog from closed beads |
-| `/interpath:status` | Generate point-in-time status report |
+| `/interpath:interpath-changelog` | Generate changelog from closed beads |
+| `/interpath:interpath-status` | Generate point-in-time status report |
 
 ## How It Works
 

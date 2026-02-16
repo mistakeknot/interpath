@@ -4,7 +4,7 @@
 
 ## Overview
 
-Product artifact generator — 1 skill, 5 commands, 0 agents, 0 hooks, 0 MCP servers. Companion plugin for Clavain. Generates roadmaps, PRDs, vision docs, changelogs, and status reports from beads state, brainstorms, and project context.
+Product artifact generator — 1 skill, 6 commands, 0 agents, 0 hooks, 0 MCP servers. Companion plugin for Clavain. Generates roadmaps, PRDs, vision docs, changelogs, and status reports from beads state, brainstorms, and project context.
 
 ## Quick Commands
 
@@ -14,7 +14,7 @@ claude --plugin-dir /root/projects/Interverse/plugins/interpath
 
 # Validate structure
 ls skills/*/SKILL.md | wc -l          # Should be 1
-ls commands/*.md | wc -l              # Should be 5
+ls commands/*.md | wc -l              # Should be 6
 bash -n scripts/interpath.sh          # Syntax check
 python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))"  # Manifest check
 ```

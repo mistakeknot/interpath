@@ -17,12 +17,15 @@ The single skill routes to artifact-specific phases:
 
 ```
 SKILL.md (router)
-  → phases/discover.md  (shared source discovery)
-  → phases/roadmap.md   (roadmap synthesis)
-  → phases/prd.md       (PRD synthesis)
-  → phases/vision.md    (vision doc synthesis)
-  → phases/changelog.md (changelog synthesis)
-  → phases/status.md    (status report synthesis)
+  → phases/discover.md           (shared source discovery)
+  → phases/roadmap.md            (roadmap synthesis)
+  → phases/prd.md                (PRD synthesis)
+  → phases/vision.md             (vision doc synthesis)
+  → phases/changelog.md          (changelog synthesis)
+  → phases/status.md             (status report synthesis)
+  → phases/discover-monorepo.md  (monorepo source discovery)
+  → phases/roadmap-monorepo.md   (monorepo roadmap synthesis)
+  → phases/propagate.md          (propagate to sub-module roadmaps)
 ```
 
 ### References
@@ -41,7 +44,7 @@ SKILL.md (router)
 
 ### Commands
 
-- 5 commands in `commands/`: roadmap.md, prd.md, vision.md, changelog.md, status.md
+- 6 commands in `commands/`: roadmap.md, prd.md, vision.md, changelog.md, status.md, propagate.md
 - Each has YAML frontmatter with `name` and `description`
 - Each invokes the `artifact-gen` skill with the artifact type
 

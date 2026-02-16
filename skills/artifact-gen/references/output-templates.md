@@ -26,6 +26,18 @@ Cross-references to related docs where they exist.
 
 Target: 100-200 lines
 
+## Monorepo Roadmap Template
+
+1. Ecosystem Snapshot (module table: name, location, version, status, roadmap?, open beads)
+2. Roadmap — Now / Next / Later (aggregated from monorepo beads, tagged by module)
+3. Module Highlights (2-3 lines per module with existing roadmap)
+4. Research Agenda (from monorepo brainstorms and plans)
+5. Cross-Module Dependencies (blocking relationships spanning modules)
+6. Modules Without Roadmaps (table with bead counts)
+7. Keeping Current (regeneration instructions)
+
+Target: 200-400 lines
+
 ## PRD Template
 
 1. Problem Statement

@@ -37,7 +37,10 @@ def test_skill_has_frontmatter(skill_dir):
 def test_artifact_gen_phases_exist(skills_dir):
     """artifact-gen skill has all expected phase files."""
     phases_dir = skills_dir / "artifact-gen" / "phases"
-    expected = ["discover.md", "roadmap.md", "prd.md", "vision.md", "changelog.md", "status.md"]
+    expected = [
+        "discover.md", "roadmap.md", "prd.md", "vision.md", "changelog.md", "status.md",
+        "discover-monorepo.md", "roadmap-monorepo.md", "propagate.md",
+    ]
     for name in expected:
         assert (phases_dir / name).exists(), f"Missing phase: {name}"
 
