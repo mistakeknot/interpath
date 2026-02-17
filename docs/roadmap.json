@@ -1,0 +1,15 @@
+{
+  "module_summary": "Interpath generates artifacts across roadmap, PRD, vision, changelog, and status from repository intelligence.",
+  "roadmap": {
+    "now": [
+      {"id": "IPTH-N1", "title": "Harden monorepo artifact synthesis for mixed module discovery states.", "priority": "P1"}
+    ],
+    "next": [
+      {"id": "IPTH-N2", "title": "Standardize inter-breed output contracts between roadmap and vision artifacts.", "priority": "P2"},
+      {"id": "IPTH-N3", "title": "Publish traceable generation metadata for every artifact run.", "priority": "P2"},
+      {"id": "IPTH-L1", "title": "Add artifact quality tests and artifact regression baselines.", "priority": "P2"}
+    ],
+    "later": [
+    ]
+  }
+}

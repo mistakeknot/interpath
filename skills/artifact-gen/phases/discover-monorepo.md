@@ -31,12 +31,19 @@ done
 
 Record the total module count.
 
-## Source 3: Per-Module Roadmaps
+## Source 3: Per-Module Roadmaps (Prefer JSON, fallback to Markdown)
 
-For each discovered module, check for `docs/roadmap.md`:
+For each discovered module, check for machine-readable roadmap artifacts first:
 
 ```bash
 for dir in hub/*/  plugins/*/  services/*/; do
+    json="${dir}docs/roadmap.json"
+    if [ -f "$json" ]; then
+        echo "=== ROADMAP JSON: ${dir%/} ==="
+        cat "$json"
+        echo "---"
+        continue
+    fi
     roadmap="${dir}docs/roadmap.md"
     if [ -f "$roadmap" ]; then
         echo "=== ROADMAP: ${dir%/} ==="
@@ -46,7 +53,7 @@ for dir in hub/*/  plugins/*/  services/*/; do
 done
 ```
 
-Note which modules have roadmaps and which don't.
+Note which modules are using JSON vs markdown and which have no roadmap artifact.
 
 ## Source 4: Monorepo Beads
 

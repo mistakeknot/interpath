@@ -4,7 +4,23 @@ After generating the monorepo roadmap, push relevant items back down to each sub
 
 ## Prerequisites
 
-The monorepo roadmap (`docs/roadmap.md` at the Interverse root) must exist before propagation. If it doesn't, generate it first using `discover-monorepo.md` → `roadmap-monorepo.md`.
+The monorepo roadmap is expected at `docs/roadmap.json` in the Interverse root. If missing or stale, regenerate it first:
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+ROADMAP_SYNC="${CLAUDE_PLUGIN_ROOT}/scripts/sync-roadmap-json.sh"
+if [ -z "${CLAUDE_PLUGIN_ROOT:-}" ] || [ ! -x "$ROADMAP_SYNC" ]; then
+    ROADMAP_SYNC="$ROOT_DIR/plugins/interpath/scripts/sync-roadmap-json.sh"
+fi
+if [ ! -x "$ROADMAP_SYNC" ]; then
+    echo "Could not find interpath roadmap sync wrapper" >&2
+    exit 1
+fi
+"$ROADMAP_SYNC"
+```
+
+If JSON is unavailable, fallback to `docs/roadmap.md`.
+If neither exists, generate first using `discover-monorepo.md` → `roadmap-monorepo.md`.
 
 ## Step 1: Identify Relevant Beads Per Module
 
@@ -14,6 +30,14 @@ For each module in the monorepo, find monorepo-level beads that reference it:
 - Include beads that list the module as blocked-by or blocking
 
 ```bash
+# Prefer canonical monorepo JSON for authoritative references.
+if [ -f "docs/roadmap.json" ]; then
+  cat docs/roadmap.json
+else
+  echo "WARN: docs/roadmap.json not available; falling back to docs/roadmap.md"
+  cat docs/roadmap.md
+fi
+
 # For each module, search monorepo beads
 for dir in hub/*/  plugins/*/  services/*/; do
     module=$(basename "${dir%/}")
@@ -36,7 +60,7 @@ For each module that **has** a `docs/roadmap.md`:
 ```markdown
 ## From Interverse Roadmap
 
-Items from the [Interverse roadmap](../../../docs/roadmap.md) that involve this module:
+Items from the [Interverse roadmap](../../../docs/roadmap.json) that involve this module:
 
 - **beads-xxx** [P1] Description of cross-cutting item
 - **beads-yyy** [P2] Description of dependency on this module

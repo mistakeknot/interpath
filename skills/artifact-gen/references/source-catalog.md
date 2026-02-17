@@ -16,6 +16,7 @@ Discoverable source types for artifact generation. Each source has glob patterns
 | Plans | `docs/plans/*.md` | First 30 lines: title, scope |
 | Vision | `docs/vision.md` | Full read |
 | Roadmap | `docs/roadmap.md` | Full read (for refresh context) |
+| Roadmap JSON | `docs/roadmap.json` | Full read (for canonical roadmaps and exact item IDs) |
 | Flux-drive summaries | `docs/research/flux-drive/*/summary.md` | First 20 lines: findings |
 | Git log | `git log --oneline -20` | Recent commits |
 | Git tags | `git tag --sort=-version:refname` | Recent versions |
@@ -31,6 +32,7 @@ Additional sources available when running from a monorepo root (see `discover-mo
 | Source | Glob Pattern | Extraction |
 |--------|-------------|------------|
 | Module manifests | `{hub,plugins,services}/*/.claude-plugin/plugin.json` | JSON parse: name, version, description per module |
+| Module roadmap JSON | `{hub,plugins,services}/*/docs/roadmap.json` | Full read: module-level canonical roadmap items for monorepo roll-up |
 | Sub-roadmaps | `{hub,plugins,services}/*/docs/roadmap.md` | First 40 lines: title, current focus |
 | Sub-beads | `{hub,plugins,services}/*/.beads/` | `cd <module> && bd stats`: per-module counts |
 | Monorepo brainstorms | `docs/brainstorms/*.md` | First 20 lines: title, summary |

@@ -14,7 +14,7 @@ claude plugin install interpath@interagency-marketplace
 
 | Command | Description |
 |---------|-------------|
-| `/interpath:roadmap` | Generate or refresh project roadmap |
+| `/interpath:roadmap` | Generate or refresh project roadmap (writes `docs/roadmap.md` and `docs/roadmap.json`) |
 | `/interpath:prd` | Generate or refresh PRD |
 | `/interpath:vision` | Generate or refresh vision doc |
 | `/interpath:interpath-changelog` | Generate changelog from closed beads |

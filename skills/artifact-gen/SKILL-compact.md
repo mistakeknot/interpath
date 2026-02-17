@@ -1,6 +1,6 @@
 # Artifact Generator (compact)
 
-Generate product artifacts from project state. Supports: **roadmap**, **prd**, **vision**, **changelog**, **status**.
+Generate product artifacts from project state. Supports: **roadmap**, **monorepo-roadmap**, **propagate**, **prd**, **vision**, **changelog**, **status**.
 
 ## Algorithm
 
@@ -24,7 +24,9 @@ Skip any source that's unavailable — degrade gracefully.
 
 | Type | Output | Key Sections |
 |------|--------|-------------|
-| **roadmap** | `docs/roadmap.md` | Where We Are (counts, companions), Shipped Work, Phased Roadmap (Now/Next/Later from beads), Research Agenda, Companion Status, Open Beads Summary, Dependency Graph |
+| **roadmap** | `docs/roadmap.md` + `docs/roadmap.json` | Where We Are (counts, companions), Shipped Work, Phased Roadmap (Now/Next/Later from beads), Research Agenda, Companion Status, Open Beads Summary, Dependency Graph |
+| **monorepo-roadmap** | `docs/roadmap.md` + `docs/roadmap.json` | Monorepo ecosystem snapshot, rollup now/next/later with module tags |
+| **propagate** | Updated module `docs/roadmap.md` files | Reads `docs/roadmap.json` and updates sub-repo roadmap sections |
 | **prd** | `docs/PRD.md` | Problem, Product Overview, Core Capabilities (by lifecycle phase), Architecture (components, routing, hooks, companions), Non-Goals, Success Metrics, Open Questions |
 | **vision** | `docs/vision.md` | What It Is, Core Conviction, Audience, Operating Principles, What's Working/Not |
 | **changelog** | `docs/CHANGELOG.md` | Group closed beads by version/date, categorize by type (feature/fix/chore) |

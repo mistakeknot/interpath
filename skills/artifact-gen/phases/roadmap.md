@@ -2,6 +2,11 @@
 
 Using the discovered sources, generate a roadmap document with these sections:
 
+## Preferred Output Pair
+
+- `docs/roadmap.md` (human-readable)
+- `docs/roadmap.json` (machine-readable canonical output)
+
 ## Output Structure
 
 ### Header
@@ -71,6 +76,55 @@ Brief note on how to refresh this roadmap:
 ```
 Run `/interpath:roadmap` to regenerate from current project state.
 ```
+
+### Canonical machine output: `docs/roadmap.json`
+
+Generate a machine-readable artifact that includes the same roadmap content as structured objects.
+
+```json
+{
+  "project": "<project-name>",
+  "kind": "single-project-roadmap",
+  "version": "<plugin-version>",
+  "generated_at": "<ISO-8601>",
+  "where_we_are": {
+    "version": "<plugin-version>",
+    "open_beads": 0,
+    "closed_beads": 0,
+    "blocked_beads": 0,
+    "companion_count": 0
+  },
+  "roadmap": {
+    "now": [],
+    "next": [],
+    "later": []
+  },
+  "research_agenda": [],
+  "companion_status": [],
+  "open_beads_summary": [],
+  "dependency_graph": [],
+  "last_updated": "<today's date>"
+}
+```
+
+Item records used in `roadmap.now`, `roadmap.next`, and `roadmap.later`:
+
+```json
+{
+  "id": "iv-xxxx",
+  "title": "Item title",
+  "source": "bead|brainstorm|prd|plan|roadmap|other",
+  "source_file": "docs/brainstorms/2026-..md",
+  "phase": "now|next|later",
+  "priority": "P0|P1|P2|P3|P4",
+  "status": "open|blocked|in_progress",
+  "blockers": ["iv-aaaa", "iv-bbbb"],
+  "module": "clavain",
+  "notes": "short reason, dependencies, or key constraint"
+}
+```
+
+This JSON is the machine source for roll-up tools; markdown is generated from it.
 
 ## Writing Guidelines
 

@@ -36,6 +36,16 @@ Target: 100-200 lines
 6. Modules Without Roadmaps (table with bead counts)
 7. Keeping Current (regeneration instructions)
 
+Also emit `docs/roadmap.json` as the machine-readable monorepo source:
+
+1. `project` and `kind`
+2. `generated_at` ISO-8601 timestamp
+3. `module_count`, `open_beads`, `blocked`
+4. `modules` with manifest-derived metadata and roadmap source type
+5. `roadmap.now`, `roadmap.next`, `roadmap.later` arrays
+6. `module_highlights`, `research_agenda`, `cross_module_dependencies`
+7. `modules_without_roadmaps`
+
 Target: 200-400 lines
 
 ## PRD Template
