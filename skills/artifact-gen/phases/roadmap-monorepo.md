@@ -7,9 +7,13 @@ Using the monorepo discovery context, generate a unified Interverse roadmap that
 - `docs/roadmap.md` (human-readable)
 - `docs/roadmap.json` (machine-readable canonical output, source-of-truth)
 
-## Canonical JSON generation (required)
+## Templated Generation Flow
 
-Run the monorepo rollup generator before markdown synthesis:
+Most roadmap sections are **deterministic** — tables, bead lists, dependency chains, and counts are computed directly from `docs/roadmap.json` and `bd --json` output. Only 3 sections need LLM judgment. This flow saves ~13K tokens vs. regenerating everything from scratch.
+
+### Step 1: Generate canonical JSON (already done by command)
+
+The calling command has already run `sync-roadmap-json.sh`. If `docs/roadmap.json` is missing, run:
 
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
@@ -24,9 +28,54 @@ fi
 "$ROADMAP_SYNC"
 ```
 
-Then load and use that JSON as your authoritative roadmap input. If generation fails, continue with discovered context but mark outputs as degraded.
+### Step 2: Run the deterministic templater
 
-## Output Structure
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+TEMPLATE_SCRIPT="$ROOT_DIR/plugins/interleave/scripts/template-roadmap-md.sh"
+bash "$TEMPLATE_SCRIPT" "$ROOT_DIR/docs/roadmap.json"
+```
+
+This produces `docs/roadmap.md` with `<!-- LLM:SECTION_NAME -->` placeholder markers for sections needing LLM judgment. All other sections (header, ecosystem table, Now items, Later items, cross-deps, modules without roadmaps, keeping current) are fully rendered.
+
+### Step 3: Read the templated output
+
+Read `docs/roadmap.md`. It will contain up to 3 LLM placeholder markers. If the template script populated all module highlights from `roadmap.json`, there may be fewer than 3.
+
+### Step 4: Fill LLM placeholders
+
+For each `<!-- LLM:SECTION_NAME -->` block found in the output:
+
+**NEXT_GROUPINGS** — Dispatch a **Sonnet 4.6** subagent (semantic grouping needs stronger judgment):
+- Input: the JSON array of P2 items embedded in the placeholder comment
+- Task: group items under 5-10 thematic headings
+- Format: markdown with **bold headings** and bullet items using the `- [module] **id** title` format
+- Heuristic hints: items sharing a `[module]` tag or dependency chain likely belong together
+- Keep each group to 2-8 items; avoid single-item groups
+
+**MODULE_HIGHLIGHTS** — Dispatch a **Haiku** subagent:
+- Input: list of modules needing highlights (embedded in the placeholder) + their open items from Now/Next sections
+- Task: write 2-3 sentence summary per module describing current focus
+- Format: `### module (location)\nvX.Y.Z. Summary.\n`
+- Use factual language based on item titles, not aspirational claims
+
+**RESEARCH_AGENDA** — Dispatch a **Haiku** subagent:
+- Input: brainstorm/plan file titles + existing research items (embedded in the placeholder)
+- Task: synthesize into 10-15 thematic bullets covering active research threads
+- Format: `- **Topic** — 1-line summary`
+- Group related brainstorms under a single bullet where appropriate
+
+### Step 5: Write final output
+
+Replace each `<!-- LLM:SECTION_NAME ... END LLM:SECTION_NAME -->` block with the subagent output. Write the final `docs/roadmap.md`.
+
+### Fallback: Manual synthesis
+
+If the template script fails (missing `jq`, broken `bd`, etc.), fall back to the manual synthesis approach below. The script will print diagnostic errors to stderr.
+
+## Manual Output Structure (fallback only)
+
+Use this structure if Step 2 fails. This is the traditional approach where the LLM generates everything.
 
 ### Header
 
@@ -39,181 +88,41 @@ Then load and use that JSON as your authoritative roadmap input. If generation f
 
 ### Section 1: Ecosystem Snapshot
 
-A table of all modules with their current state:
-
-```markdown
-## Ecosystem Snapshot
+A table of all modules from `roadmap.json .modules[]`, sorted alphabetically:
 
 | Module | Location | Version | Status | Roadmap | Open Beads |
 |--------|----------|---------|--------|---------|------------|
-| clavain | hub/clavain | X.Y.Z | active | yes | N |
-| interflux | plugins/interflux | X.Y.Z | active | yes | N |
-| ... | ... | ... | ... | ... | ... |
-```
-
-**Status** values:
-- `active` — has recent commits and/or open beads
-- `stable` — no recent activity, appears complete
-- `early` — has manifest but limited development
-- `planned` — referenced in docs but no manifest
 
 ### Section 2: Roadmap — Now / Next / Later
 
-Aggregate from monorepo beads, organized by priority:
-
-```markdown
-## Roadmap
-
-### Now (P0–P1)
-- [module] **beads-xxx** Description of critical/high-priority item
-- [module] **beads-yyy** Description (blocked by beads-zzz)
-
-### Next (P2)
-- [module] **beads-xxx** Description of medium-priority item
-
-### Later (P3–P4)
-- [module] **beads-xxx** Description of backlog/aspirational item
-```
-
-For each item:
-- Tag with `[module]` prefix identifying which module it relates to
-- Include bead ID for traceability
-- Note blocking relationships inline
-- Items that span multiple modules get tagged with all relevant modules
-
-Roll-up inclusion rules:
-- Start from all modules' roadmap artifacts.
-- Prefer `docs/roadmap.json` as the source per module when present.
-- Fallback to `docs/roadmap.md` parsing only when JSON is missing.
-- Deduplicate by `(id, module)` pair.
-- Add monorepo-level items if they are in open beads even when they are not present in module-level artifacts.
+From beads, tagged with `[module]` prefix:
+- **Now (P0-P1):** critical/high-priority items
+- **Next (P2):** grouped under thematic headings
+- **Later (P3+):** backlog/aspirational items
 
 ### Section 3: Module Highlights
 
-For each module that has either `docs/roadmap.json` or `docs/roadmap.md`, provide a 2-3 line summary of current focus:
-
-```markdown
-## Module Highlights
-
-### clavain (hub/clavain)
-Current focus: [synthesized from roadmap]. Key items: [2-3 highlights].
-
-### interflux (plugins/interflux)
-Current focus: [synthesized from roadmap]. Key items: [2-3 highlights].
-```
-
-For consistency, prefer `docs/roadmap.json` module summary fields when available and fallback to markdown-derived summary.
+2-3 line summaries per module from `roadmap.json .module_highlights[]`.
 
 ### Section 4: Research Agenda
 
-Synthesize from monorepo-level brainstorms, PRDs, plans, and roadmap artifacts.
-
-```markdown
-## Research Agenda
-
-- **[topic]** — [1-line summary from brainstorm/plan] ([source file])
-- **[topic]** — [1-line summary] ([source file])
-```
+Synthesized from brainstorms, plans, and `roadmap.json .research_agenda[]`.
 
 ### Section 5: Cross-Module Dependencies
 
-Blocking relationships between beads, especially those spanning modules:
-
-```markdown
-## Cross-Module Dependencies
-
-- **beads-xxx** (interlock) blocks **beads-yyy** (clavain) — [reason]
-- **beads-aaa** (intermute) blocks **beads-bbb** (interlock) — [reason]
-```
-
-If no cross-module blocking exists, note "No cross-module blockers identified."
+Blocking relationships spanning modules.
 
 ### Section 6: Modules Without Roadmaps
 
-List modules that lack both `docs/roadmap.json` and `docs/roadmap.md`, with their bead count:
-
-```markdown
-## Modules Without Roadmaps
-
-| Module | Location | Open Beads | Notes |
-|--------|----------|------------|-------|
-| interline | plugins/interline | 0 | statusline renderer |
-| interwatch | plugins/interwatch | 2 | doc freshness monitoring |
-```
+From `roadmap.json .modules_without_roadmaps[]`.
 
 ### Section 7: Keeping Current
 
-```markdown
-## Keeping Current
-
-```
-# Regenerate this roadmap
-/interpath:roadmap    (from Interverse root)
-
-# Propagate items to subrepo roadmaps
-/interpath:propagate  (from Interverse root)
-```
-```
+Regeneration instructions.
 
 ### Canonical machine output: `docs/roadmap.json`
 
-Emit a stable JSON artifact that captures the complete roll-up. Prefer the file generated by:
-
-```bash
-"$ROADMAP_SYNC"
-```
-
-Expected fields:
-
-```json
-{
-  "project": "Interverse",
-  "kind": "interverse-monorepo-roadmap",
-  "generated_at": "<ISO-8601>",
-  "module_count": 25,
-  "open_beads": 0,
-  "blocked": 0,
-  "modules": [],
-  "snapshot": [
-    {
-      "module": "clavain",
-      "location": "hub/clavain",
-      "version": "0.6.26",
-      "status": "active",
-      "has_roadmap": true,
-      "roadmap_source": "json|markdown|none",
-      "open_beads": 0
-    }
-  ],
-  "roadmap": {
-    "now": [],
-    "next": [],
-    "later": []
-  },
-  "module_highlights": [],
-  "research_agenda": [],
-  "cross_module_dependencies": [],
-  "modules_without_roadmaps": []
-}
-```
-
-Use module-level roadmap item shape for arrays:
-
-```json
-{
-  "id": "iv-xxxx",
-  "module": "interflux",
-  "title": "Item title",
-  "phase": "now|next|later",
-  "priority": "P0|P1|P2|P3|P4",
-  "status": "open|blocked|in_progress",
-  "blocked_by": ["iv-aaaa"],
-  "source": "beads|module-roadmap|monorepo-beads|research",
-  "source_file": "docs/roadmap.md"
-}
-```
-
-This JSON artifact is the source-of-truth for cross-repo tooling and should be treated as definitive for roll-up behavior.
+The JSON artifact generated by `sync-roadmap-json.sh` is the source-of-truth for cross-repo tooling.
 
 ## Writing Guidelines
 

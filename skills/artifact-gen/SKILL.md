@@ -43,7 +43,7 @@ Based on the artifact type, read and follow the corresponding phase file:
 | vision | `artifact-gen/phases/vision.md` |
 | changelog | `artifact-gen/phases/changelog.md` |
 | status | `artifact-gen/phases/status.md` |
-| monorepo-roadmap | `artifact-gen/phases/roadmap-monorepo.md` |
+| monorepo-roadmap | `artifact-gen/phases/roadmap-monorepo.md` (template-then-fill) |
 | propagate | `artifact-gen/phases/roadmap-monorepo.md` → `artifact-gen/phases/propagate.md` |
 
 For **propagate**: first generate the monorepo roadmap, then run the propagation phase to push items to sub-module roadmaps.
