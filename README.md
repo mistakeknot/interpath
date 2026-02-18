@@ -1,34 +1,40 @@
 # interpath
 
-Product artifact generator for Claude Code — generates roadmaps, PRDs, vision docs, changelogs, and status reports from beads state, brainstorms, and project context.
+Product artifact generator for Claude Code.
+
+## What This Does
+
+interpath generates roadmaps, PRDs, vision documents, changelogs, and status reports by pulling from the actual project state — beads issues, brainstorm docs, existing plans, git history, plugin manifests. The artifacts stay connected to the real work rather than drifting into aspirational fiction, which is the usual failure mode of product documentation.
+
+Sources degrade gracefully. No beads? Skip the backlog sections. No PRD? Skip that input. The artifact still generates with whatever context is available.
+
+## Installation
+
+```bash
+/plugin install interpath
+```
 
 Companion plugin for [Clavain](https://github.com/mistakeknot/Clavain).
 
-## Install
-
-```bash
-claude plugin install interpath@interagency-marketplace
-```
-
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `/interpath:roadmap` | Generate or refresh project roadmap (writes `docs/roadmap.md` and `docs/roadmap.json`) |
-| `/interpath:prd` | Generate or refresh PRD |
-| `/interpath:vision` | Generate or refresh vision doc |
-| `/interpath:interpath-changelog` | Generate changelog from closed beads |
-| `/interpath:interpath-status` | Generate point-in-time status report |
+```
+/interpath:roadmap     Generate or refresh the project roadmap
+/interpath:prd         Generate or refresh a Product Requirements Document
+/interpath:vision      Generate or refresh a vision document
+/interpath:changelog   Generate changelog from closed beads
+/interpath:status      Generate a point-in-time status report
+```
 
 ## How It Works
 
-Each command triggers the `artifact-gen` skill which:
+Each command triggers the `artifact-gen` skill, which:
 
 1. **Discovers** sources — beads state, brainstorms, PRDs, plans, flux-drive summaries, git log, plugin manifests
-2. **Synthesizes** the artifact using the appropriate phase template
-3. **Writes** the output to `docs/` (or presents for review)
+2. **Synthesizes** the artifact using the appropriate template
+3. **Writes** output to `docs/` (or presents for review)
 
-Sources degrade gracefully — no beads means skip backlog sections, no PRD means skip that input.
+All artifact types share a single skill with phase-based routing. The discovery phase is shared; the synthesis phase is specific to each artifact type.
 
 ## License
 
