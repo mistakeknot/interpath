@@ -11,7 +11,7 @@ Using the discovered sources, generate or refresh a vision document.
 
 **Last updated:** [today's date]
 **PRD:** [`docs/PRD.md`](PRD.md)
-**Roadmap:** [`docs/roadmap.md`](roadmap.md)
+**Roadmap:** [`docs/${module}-roadmap.md`](${module}-roadmap.md)
 ```
 
 ### Section 1: The Big Idea

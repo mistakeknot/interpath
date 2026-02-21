@@ -17,7 +17,7 @@ This command is designed for the Interverse monorepo root. It:
 
 **Prerequisites:** Run from the Interverse monorepo root directory.
 
-Output: Updated `docs/roadmap.md` files in each affected module.
+Output: Updated `docs/<module>-roadmap.md` files in each affected module.
 
 If needed, refresh the monorepo rollup first:
 

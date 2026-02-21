@@ -31,7 +31,8 @@ The roadmap synthesizes:
 **Monorepo mode:** When run from a monorepo root (e.g., Interverse), this command auto-detects the monorepo context and generates an ecosystem-wide roadmap covering all modules in `hub/`, `plugins/`, and `services/`. Use `/interpath:propagate` to push items back to individual module roadmaps.
 
 Output:
-- `docs/roadmap.md` (human-facing view)
+- `docs/interverse-roadmap.md` (preferred human-facing view for monorepo root)
+- `docs/roadmap.md` (compatibility)
 - `docs/roadmap.json` (machine-readable canonical source, for downstream tooling)
 - `docs/roadmap.json` is guaranteed from `plugins/interpath/scripts/sync-roadmap-json.sh` and should be treated as the canonical feed.
 

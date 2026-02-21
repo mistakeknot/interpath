@@ -4,7 +4,7 @@ Using the discovered sources, generate a roadmap document with these sections:
 
 ## Preferred Output Pair
 
-- `docs/roadmap.md` (human-readable)
+- `docs/${module}-roadmap.md` (human-readable)
 - `docs/roadmap.json` (machine-readable canonical output)
 
 ## Output Structure
@@ -16,7 +16,7 @@ Using the discovered sources, generate a roadmap document with these sections:
 
 **Version:** [from plugin.json]
 **Last updated:** [today's date]
-**Vision:** [`docs/vision.md`](vision.md)
+**Vision:** [`docs/${module}-vision.md`](${module}-vision.md)
 **PRD:** [`docs/PRD.md`](PRD.md)
 ```
 

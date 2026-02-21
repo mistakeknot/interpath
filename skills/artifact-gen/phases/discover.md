@@ -46,7 +46,7 @@ Use Glob to find brainstorms:
 
 ## Source 5: Vision Doc
 
-- Pattern: `docs/vision.md`
+- Pattern: `docs/${module}-vision.md` (preferred), fallback to `docs/vision.md`
 - Read if it exists (useful for roadmap/PRD cross-referencing)
 
 ## Source 6: Existing Artifacts

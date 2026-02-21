@@ -19,7 +19,7 @@ fi
 "$ROADMAP_SYNC"
 ```
 
-If JSON is unavailable, fallback to `docs/roadmap.md`.
+If JSON is unavailable, fallback to `docs/interverse-roadmap.md` (or `docs/roadmap.md`).
 If neither exists, generate first using `discover-monorepo.md` → `roadmap-monorepo.md`.
 
 ## Step 1: Identify Relevant Beads Per Module
@@ -34,8 +34,12 @@ For each module in the monorepo, find monorepo-level beads that reference it:
 if [ -f "docs/roadmap.json" ]; then
   cat docs/roadmap.json
 else
-  echo "WARN: docs/roadmap.json not available; falling back to docs/roadmap.md"
-  cat docs/roadmap.md
+  echo "WARN: docs/roadmap.json not available; falling back to docs/interverse-roadmap.md"
+  if [ -f docs/interverse-roadmap.md ]; then
+    cat docs/interverse-roadmap.md
+  else
+    cat docs/roadmap.md
+  fi
 fi
 
 # For each module, search monorepo beads
@@ -50,7 +54,7 @@ done
 
 ## Step 2: Update Existing Roadmaps
 
-For each module that **has** a `docs/roadmap.md`:
+For each module that **has** a `docs/<module>-roadmap.md` (or `docs/roadmap.md` fallback):
 
 1. `cd` into the module directory
 2. Run the standard single-project discovery (`discover.md` phase) to gather the module's own context
@@ -76,7 +80,7 @@ No monorepo-level items currently reference this module.
 
 ## Step 3: Generate Minimal Roadmaps
 
-For modules that **lack** a `docs/roadmap.md` but have **3 or more** beads referencing them (either in the module's own `.beads/` or in monorepo beads):
+For modules that **lack** both `docs/<module>-roadmap.md` and `docs/roadmap.md` but have **3 or more** beads referencing them (either in the module's own `.beads/` or in monorepo beads):
 
 1. `cd` into the module directory
 2. Run the standard single-project discovery (`discover.md` phase)
@@ -86,7 +90,7 @@ For modules that **lack** a `docs/roadmap.md` but have **3 or more** beads refer
    - Open Beads Summary (from local and monorepo beads)
    - From Interverse Roadmap section
    - Keeping Current section
-4. Create `docs/roadmap.md` in the module directory (create `docs/` if needed)
+4. Create `docs/<module>-roadmap.md` in the module directory (create `docs/` if needed)
 
 ## Step 4: Summary Report
 

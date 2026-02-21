@@ -14,8 +14,8 @@ Discoverable source types for artifact generation. Each source has glob patterns
 | Brainstorms | `docs/brainstorms/*.md` | First 20 lines: title, summary |
 | PRD | `docs/PRD.md` | Full read |
 | Plans | `docs/plans/*.md` | First 30 lines: title, scope |
-| Vision | `docs/vision.md` | Full read |
-| Roadmap | `docs/roadmap.md` | Full read (for refresh context) |
+| Vision | `docs/${module}-vision.md` | Full read (fallback: `docs/vision.md`) |
+| Roadmap | `docs/${module}-roadmap.md` | Full read (fallback: `docs/roadmap.md`) |
 | Roadmap JSON | `docs/roadmap.json` | Full read (for canonical roadmaps and exact item IDs) |
 | Flux-drive summaries | `docs/research/flux-drive/*/summary.md` | First 20 lines: findings |
 | Git log | `git log --oneline -20` | Recent commits |
@@ -33,7 +33,7 @@ Additional sources available when running from a monorepo root (see `discover-mo
 |--------|-------------|------------|
 | Module manifests | `{hub,plugins,services}/*/.claude-plugin/plugin.json` | JSON parse: name, version, description per module |
 | Module roadmap JSON | `{hub,plugins,services}/*/docs/roadmap.json` | Full read: module-level canonical roadmap items for monorepo roll-up |
-| Sub-roadmaps | `{hub,plugins,services}/*/docs/roadmap.md` | First 40 lines: title, current focus |
+| Sub-roadmaps | `{hub,plugins,services}/*/docs/*-roadmap.md` | First 40 lines: title, current focus |
 | Sub-beads | `{hub,plugins,services}/*/.beads/` | `cd <module> && bd stats`: per-module counts |
 | Monorepo brainstorms | `docs/brainstorms/*.md` | First 20 lines: title, summary |
 | Monorepo PRDs | `docs/prds/*.md` | First 30 lines: title, scope |

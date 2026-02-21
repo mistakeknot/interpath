@@ -13,7 +13,7 @@ Generate product artifacts from project state. Supports: **roadmap**, **monorepo
 | Beads state | `bd stats`, `bd list --status=open`, `bd list --status=closed` (last 40), `bd blocked` |
 | Brainstorms | Glob `docs/brainstorms/*.md`, read first 20 lines each |
 | PRDs & Plans | Glob `docs/PRD.md`, `docs/prds/*.md`, `docs/plans/*.md`, read first 30 lines each |
-| Vision doc | Read `docs/vision.md` if exists |
+| Vision doc | Read `docs/${module}-vision.md` (fallback: `docs/vision.md`) |
 | Existing artifact | Read the current version of the target doc (for diffing) |
 | Git activity | `git log --oneline -20`, `git tag --sort=-version:refname | head -5` |
 | Companions | Check `~/.claude/plugins/cache/interagency-marketplace/*/` for installed plugins |
@@ -24,11 +24,11 @@ Skip any source that's unavailable — degrade gracefully.
 
 | Type | Output | Key Sections |
 |------|--------|-------------|
-| **roadmap** | `docs/roadmap.md` + `docs/roadmap.json` | Where We Are (counts, companions), Shipped Work, Phased Roadmap (Now/Next/Later from beads), Research Agenda, Companion Status, Open Beads Summary, Dependency Graph |
-| **monorepo-roadmap** | `docs/roadmap.md` + `docs/roadmap.json` | Monorepo ecosystem snapshot, rollup now/next/later with module tags |
-| **propagate** | Updated module `docs/roadmap.md` files | Reads `docs/roadmap.json` and updates sub-repo roadmap sections |
+| **roadmap** | `docs/${module}-roadmap.md` + `docs/roadmap.json` | Where We Are (counts, companions), Shipped Work, Phased Roadmap (Now/Next/Later from beads), Research Agenda, Companion Status, Open Beads Summary, Dependency Graph |
+| **monorepo-roadmap** | `docs/interverse-roadmap.md` + `docs/roadmap.json` | Monorepo ecosystem snapshot, rollup now/next/later with module tags |
+| **propagate** | Updated module `docs/${module}-roadmap.md` files | Reads `docs/roadmap.json` and updates sub-repo roadmap sections |
 | **prd** | `docs/PRD.md` | Problem, Product Overview, Core Capabilities (by lifecycle phase), Architecture (components, routing, hooks, companions), Non-Goals, Success Metrics, Open Questions |
-| **vision** | `docs/vision.md` | What It Is, Core Conviction, Audience, Operating Principles, What's Working/Not |
+| **vision** | `docs/${module}-vision.md` | What It Is, Core Conviction, Audience, Operating Principles, What's Working/Not |
 | **changelog** | `docs/CHANGELOG.md` | Group closed beads by version/date, categorize by type (feature/fix/chore) |
 | **status** | `docs/STATUS.md` | Health metrics, shipped this week, blockers, next priorities |
 

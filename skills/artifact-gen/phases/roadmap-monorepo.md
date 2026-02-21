@@ -4,7 +4,7 @@ Using the monorepo discovery context, generate a unified Interverse roadmap that
 
 ## Preferred Output Pair
 
-- `docs/roadmap.md` (human-readable)
+- `docs/interverse-roadmap.md` (human-readable)
 - `docs/roadmap.json` (machine-readable canonical output, source-of-truth)
 
 ## Templated Generation Flow
@@ -36,11 +36,11 @@ TEMPLATE_SCRIPT="$ROOT_DIR/plugins/interleave/scripts/template-roadmap-md.sh"
 bash "$TEMPLATE_SCRIPT" "$ROOT_DIR/docs/roadmap.json"
 ```
 
-This produces `docs/roadmap.md` with `<!-- LLM:SECTION_NAME -->` placeholder markers for sections needing LLM judgment. All other sections (header, ecosystem table, Now items, Later items, cross-deps, modules without roadmaps, keeping current) are fully rendered.
+This produces `docs/interverse-roadmap.md` with `<!-- LLM:SECTION_NAME -->` placeholder markers for sections needing LLM judgment. All other sections (header, ecosystem table, Now items, Later items, cross-deps, modules without roadmaps, keeping current) are fully rendered.
 
 ### Step 3: Read the templated output
 
-Read `docs/roadmap.md`. It will contain up to 3 LLM placeholder markers. If the template script populated all module highlights from `roadmap.json`, there may be fewer than 3.
+Read `docs/interverse-roadmap.md`. It will contain up to 3 LLM placeholder markers. If the template script populated all module highlights from `roadmap.json`, there may be fewer than 3.
 
 ### Step 4: Fill LLM placeholders
 
@@ -67,7 +67,7 @@ For each `<!-- LLM:SECTION_NAME -->` block found in the output:
 
 ### Step 5: Write final output
 
-Replace each `<!-- LLM:SECTION_NAME ... END LLM:SECTION_NAME -->` block with the subagent output. Write the final `docs/roadmap.md`.
+Replace each `<!-- LLM:SECTION_NAME ... END LLM:SECTION_NAME -->` block with the subagent output. Write the final `docs/interverse-roadmap.md`.
 
 ### Fallback: Manual synthesis
 

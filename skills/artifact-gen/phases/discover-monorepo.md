@@ -44,7 +44,11 @@ for dir in hub/*/  plugins/*/  services/*/; do
         echo "---"
         continue
     fi
-    roadmap="${dir}docs/roadmap.md"
+    module="$(basename "${dir%/}")"
+    roadmap="${dir}docs/${module}-roadmap.md"
+    if [ ! -f "$roadmap" ] && [ -f "${dir}docs/roadmap.md" ]; then
+        roadmap="${dir}docs/roadmap.md"
+    fi
     if [ -f "$roadmap" ]; then
         echo "=== ROADMAP: ${dir%/} ==="
         head -40 "$roadmap"
