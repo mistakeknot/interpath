@@ -15,5 +15,16 @@
     "documentation",
     "product-artifacts",
     "beads"
+  ],
+  "skills": [
+    "./skills/artifact-gen"
+  ],
+  "commands": [
+    "./commands/changelog.md",
+    "./commands/prd.md",
+    "./commands/propagate.md",
+    "./commands/roadmap.md",
+    "./commands/status.md",
+    "./commands/vision.md"
   ]
 }
