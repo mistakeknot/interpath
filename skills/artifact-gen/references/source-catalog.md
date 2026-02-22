@@ -14,8 +14,8 @@ Discoverable source types for artifact generation. Each source has glob patterns
 | Brainstorms | `docs/brainstorms/*.md` | First 20 lines: title, summary |
 | PRD | `docs/PRD.md` | Full read |
 | Plans | `docs/plans/*.md` | First 30 lines: title, scope |
-| Vision | `docs/${module}-vision.md` | Full read (fallback: `docs/vision.md`) |
-| Roadmap | `docs/${module}-roadmap.md` | Full read (fallback: `docs/roadmap.md`) |
+| Vision | `docs/${module}-vision.md` | Full read |
+| Roadmap | `docs/${module}-roadmap.md` | Full read |
 | Roadmap JSON | `docs/roadmap.json` | Full read (for canonical roadmaps and exact item IDs) |
 | Flux-drive summaries | `docs/research/flux-drive/*/summary.md` | First 20 lines: findings |
 | Git log | `git log --oneline -20` | Recent commits |

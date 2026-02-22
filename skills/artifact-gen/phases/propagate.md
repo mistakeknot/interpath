@@ -19,28 +19,22 @@ fi
 "$ROADMAP_SYNC"
 ```
 
-If JSON is unavailable, fallback to `docs/interverse-roadmap.md` (or `docs/roadmap.md`).
-If neither exists, generate first using `discover-monorepo.md` → `roadmap-monorepo.md`.
+If `docs/roadmap.json` is still unavailable after sync, stop and regenerate via `discover-monorepo.md` → `roadmap-monorepo.md`.
 
 ## Step 1: Identify Relevant Beads Per Module
 
 For each module in the monorepo, find monorepo-level beads that reference it:
 - Match module name (e.g., "interflux", "clavain", "intermute") in bead title or description
-- Match module path (e.g., "plugins/interflux", "hub/clavain") in bead content
+- Match module path (e.g., "plugins/interflux", "os/clavain") in bead content
 - Include beads that list the module as blocked-by or blocking
 
 ```bash
-# Prefer canonical monorepo JSON for authoritative references.
-if [ -f "docs/roadmap.json" ]; then
-  cat docs/roadmap.json
-else
-  echo "WARN: docs/roadmap.json not available; falling back to docs/interverse-roadmap.md"
-  if [ -f docs/interverse-roadmap.md ]; then
-    cat docs/interverse-roadmap.md
-  else
-    cat docs/roadmap.md
-  fi
+# Require canonical monorepo JSON for authoritative references.
+if [ ! -f "docs/roadmap.json" ]; then
+  echo "ERROR: docs/roadmap.json not found. Run /interpath:roadmap from the monorepo root first." >&2
+  exit 1
 fi
+cat docs/roadmap.json
 
 # For each module, search monorepo beads
 for dir in hub/*/  plugins/*/  services/*/; do
@@ -54,7 +48,7 @@ done
 
 ## Step 2: Update Existing Roadmaps
 
-For each module that **has** a `docs/<module>-roadmap.md` (or `docs/roadmap.md` fallback):
+For each module that **has** a `docs/<module>-roadmap.md`:
 
 1. `cd` into the module directory
 2. Run the standard single-project discovery (`discover.md` phase) to gather the module's own context
@@ -80,7 +74,7 @@ No monorepo-level items currently reference this module.
 
 ## Step 3: Generate Minimal Roadmaps
 
-For modules that **lack** both `docs/<module>-roadmap.md` and `docs/roadmap.md` but have **3 or more** beads referencing them (either in the module's own `.beads/` or in monorepo beads):
+For modules that **lack** `docs/<module>-roadmap.md` but have **3 or more** beads referencing them (either in the module's own `.beads/` or in monorepo beads):
 
 1. `cd` into the module directory
 2. Run the standard single-project discovery (`discover.md` phase)
@@ -100,7 +94,7 @@ After processing all modules, output a summary:
 ## Propagation Summary
 
 ### Updated (existing roadmaps refreshed)
-- hub/clavain — 5 monorepo items added
+- os/clavain — 5 monorepo items added
 - plugins/interflux — 3 monorepo items added
 
 ### Created (new minimal roadmaps)

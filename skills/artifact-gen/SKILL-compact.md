@@ -13,7 +13,7 @@ Generate product artifacts from project state. Supports: **roadmap**, **monorepo
 | Beads state | `bd stats`, `bd list --status=open`, `bd list --status=closed` (last 40), `bd blocked` |
 | Brainstorms | Glob `docs/brainstorms/*.md`, read first 20 lines each |
 | PRDs & Plans | Glob `docs/PRD.md`, `docs/prds/*.md`, `docs/plans/*.md`, read first 30 lines each |
-| Vision doc | Read `docs/${module}-vision.md` (fallback: `docs/vision.md`) |
+| Vision doc | Read `docs/${module}-vision.md` |
 | Existing artifact | Read the current version of the target doc (for diffing) |
 | Git activity | `git log --oneline -20`, `git tag --sort=-version:refname | head -5` |
 | Companions | Check `~/.claude/plugins/cache/interagency-marketplace/*/` for installed plugins |

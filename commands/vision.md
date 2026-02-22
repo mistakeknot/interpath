@@ -15,6 +15,6 @@ The vision doc synthesizes:
 - Companion ecosystem constellation
 - Key bets and assumptions
 
-Output: `docs/${repo}-vision.md` (preferred), plus compatibility `docs/vision.md`
+Output: `docs/${repo}-vision.md` (canonical)
 
 Use the Skill tool to invoke `interpath:artifact-gen` with the instruction: "Generate a vision artifact."

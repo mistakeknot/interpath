@@ -73,7 +73,7 @@ Replace each `<!-- LLM:SECTION_NAME ... END LLM:SECTION_NAME -->` block with the
 
 If the template script fails (missing `jq`, broken `bd`, etc.), fall back to the manual synthesis approach below. The script will print diagnostic errors to stderr.
 
-## Manual Output Structure (fallback only)
+## Manual Output Structure (templater recovery path)
 
 Use this structure if Step 2 fails. This is the traditional approach where the LLM generates everything.
 
