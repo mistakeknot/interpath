@@ -1,11 +1,14 @@
 {
-  "SKILL.md": "c27459e4f69a5c22f2ab3f1945a3729c2ca36ade8758f4fcb9ca4398cbf5e9e7",
+  "SKILL.md": "8384552e22e60a0d01ffa6acb182cafd5625d1fcbab4db8f678d2e3100363c8a",
   "changelog.md": "daaa54356b24dad3f8596b7205bed4953c4aeea36a677b3cdab879e4272268b0",
-  "discover.md": "e47ac37a3efd2d418cc6f979abd5702a69143cd81b64f679c99716c8db69f970",
-  "output-templates.md": "2e1821631a8979e565d7c0770f48bbfbf70fa5f1c9fa40b38c2ac8bd774b2336",
+  "discover-monorepo.md": "6d36678fa636a9087cc3e41a714fdf8f83d2094f6658606fe17269133110cbf4",
+  "discover.md": "a337d2d4ff146bcdb5e9a9056ba4f9895f349cf315797f40bd94a557d5fd2f38",
+  "output-templates.md": "5cb219ec3d3e887934c2fc7b50398b3442a0b4414b19f4133787e471e61c36f2",
   "prd.md": "4ad66e44d7a3980c2f0034eed0635f2282df8e3f13fd7a1f311b7ac5843a3b28",
-  "roadmap.md": "d28c102aeed11afbb36329bbddcfab857748484900c59eb5331110b287f00763",
-  "source-catalog.md": "e8e5855d56d216c29e1c92c286de735c450d3866cd14e75ab83795f15562b810",
+  "propagate.md": "f4eebb3ff26dc7c65e3ba161923e1c51a3c96850d4b0f4242780e3d2c9f28433",
+  "roadmap-monorepo.md": "1fc4bd2e46ba8bbfbbef4f5fbee8ca2601a52b6205dc319ded3bc6436fd3b673",
+  "roadmap.md": "cbcc39e5a3b30cdf59927f2b40d56ab00d2faa61250ad429049e1f8ab557869a",
+  "source-catalog.md": "8fb0a4e4761bc47d880b39d8642a71c966c5a4b7ac977d10456daa93d78f052e",
   "status.md": "d891fbdb13df5e532cacf47808a3cc2ce7198e6e8f6c5acbad026e82eb1befc9",
-  "vision.md": "3d76ab2bdbc37f84dc09463dfb41df083b171b4b63b19cd90590efd1679e972f"
+  "vision.md": "281acad5e326bc0620f93d09612687f4678dcca50cca4adc0155dacd580249b6"
 }
