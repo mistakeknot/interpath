@@ -52,6 +52,24 @@ For **propagate**: first generate the monorepo roadmap, then run the propagation
 
 Write the generated artifact to the appropriate location (typically `docs/` in the project root). If the file already exists, show a diff summary before overwriting.
 
+## Step 5: Consistency Check (Roadmap only)
+
+After writing a **roadmap** or **monorepo-roadmap** artifact, run a bead consistency check:
+
+1. Extract all `iv-*` IDs from the generated roadmap markdown
+2. For each ID, verify a bead exists: `bd show <id>` should return success
+3. Check for open beads NOT referenced in the roadmap: `bd list --status=open` and cross-reference
+4. Report discrepancies inline at the end of the generation output:
+   - **ERROR** — Roadmap references an ID with no corresponding bead (indicates stale or typo'd ID)
+   - **WARNING** — Open beads exist that aren't mentioned in the roadmap (may need placement or are intentionally excluded)
+   - **INFO** — "Recently completed" IDs whose bead is not yet closed
+
+If there are zero errors, print a one-line confirmation: "Roadmap-bead consistency: all IDs verified."
+
+If the standalone audit script exists at `scripts/audit-roadmap-beads.sh`, you may call it instead of performing the checks manually. Both approaches produce equivalent results.
+
+Skip this step for non-roadmap artifacts (prd, vision, changelog, status).
+
 ## Notes
 
 - Sources degrade gracefully — missing beads, PRDs, or brainstorms are silently skipped
