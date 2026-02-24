@@ -1,116 +1,56 @@
 # Propagation Phase
 
-After generating the monorepo roadmap, push relevant items back down to each sub-module's roadmap. This ensures every module's roadmap reflects both its own state and its place in the Interverse ecosystem.
+Auto-generate module-level roadmap files from beads state. Module roadmaps are derived artifacts, not hand-curated — strategic context lives in the root [Demarch Roadmap](../../../../../docs/demarch-roadmap.md).
 
-## Prerequisites
+## How It Works
 
-The monorepo roadmap is expected at `docs/roadmap.json` in the Interverse root. If missing or stale, regenerate it first:
+Run the `generate-module-roadmaps.sh` script from the Demarch root:
 
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-ROADMAP_SYNC="${CLAUDE_PLUGIN_ROOT}/scripts/sync-roadmap-json.sh"
-if [ -z "${CLAUDE_PLUGIN_ROOT:-}" ] || [ ! -x "$ROADMAP_SYNC" ]; then
-    ROADMAP_SYNC="$ROOT_DIR/plugins/interpath/scripts/sync-roadmap-json.sh"
-fi
-if [ ! -x "$ROADMAP_SYNC" ]; then
-    echo "Could not find interpath roadmap sync wrapper" >&2
-    exit 1
-fi
-"$ROADMAP_SYNC"
+"$ROOT_DIR/scripts/generate-module-roadmaps.sh"
 ```
 
-If `docs/roadmap.json` is still unavailable after sync, stop and regenerate via `discover-monorepo.md` → `roadmap-monorepo.md`.
+The script:
+1. Iterates through all module directories under `apps/`, `os/`, `core/`, `interverse/`, `sdk/`
+2. Queries beads (`bd list`, `bd blocked`) for items matching each module name
+3. Writes `docs/roadmap.md` in each module with open, in-progress, blocked, and recently-closed items
+4. Links each module roadmap back to `docs/demarch-roadmap.md` for strategic context
+5. Skips modules with no matching beads
 
-## Step 1: Identify Relevant Beads Per Module
+## Dry Run
 
-For each module in the monorepo, find monorepo-level beads that reference it:
-- Match module name (e.g., "interflux", "clavain", "intermute") in bead title or description
-- Match module path (e.g., "plugins/interflux", "os/clavain") in bead content
-- Include beads that list the module as blocked-by or blocking
+Preview what would be generated without writing files:
 
 ```bash
-# Require canonical monorepo JSON for authoritative references.
-if [ ! -f "docs/roadmap.json" ]; then
-  echo "ERROR: docs/roadmap.json not found. Run /interpath:roadmap from the monorepo root first." >&2
-  exit 1
-fi
-cat docs/roadmap.json
-
-# For each module, search monorepo beads
-for dir in hub/*/  plugins/*/  services/*/; do
-    module=$(basename "${dir%/}")
-    matches=$(bd list --status=open 2>/dev/null | grep -ic "$module" || echo "0")
-    if [ "$matches" -gt 0 ]; then
-        echo "MODULE: $module — $matches relevant monorepo beads"
-    fi
-done
+"$ROOT_DIR/scripts/generate-module-roadmaps.sh" --dry-run
 ```
 
-## Step 2: Update Existing Roadmaps
+## Output Format
 
-For each module that **has** a `docs/<module>-roadmap.md`:
-
-1. `cd` into the module directory
-2. Run the standard single-project discovery (`discover.md` phase) to gather the module's own context
-3. Regenerate the roadmap using the standard `roadmap.md` phase
-4. **Append** a new section at the end (before "Keeping Current" if it exists):
+Each generated `docs/roadmap.md` contains:
 
 ```markdown
-## From Interverse Roadmap
+# <module> Roadmap
 
-Items from the [Interverse roadmap](../../../docs/roadmap.json) that involve this module:
+> Auto-generated from beads on <date>. Strategic context: [Demarch Roadmap](../../docs/demarch-roadmap.md)
 
-- **beads-xxx** [P1] Description of cross-cutting item
-- **beads-yyy** [P2] Description of dependency on this module
-```
+## In Progress
+- <bead lines>
 
-If no monorepo beads reference this module, add:
+## Blocked
+- <bead lines>
 
-```markdown
-## From Interverse Roadmap
+## Open Items
+- <bead lines>
 
-No monorepo-level items currently reference this module.
-```
-
-## Step 3: Generate Minimal Roadmaps
-
-For modules that **lack** `docs/<module>-roadmap.md` but have **3 or more** beads referencing them (either in the module's own `.beads/` or in monorepo beads):
-
-1. `cd` into the module directory
-2. Run the standard single-project discovery (`discover.md` phase)
-3. Generate a minimal roadmap with just:
-   - Header (name, version, date)
-   - Where We Are (from plugin manifest)
-   - Open Beads Summary (from local and monorepo beads)
-   - From Interverse Roadmap section
-   - Keeping Current section
-4. Create `docs/<module>-roadmap.md` in the module directory (create `docs/` if needed)
-
-## Step 4: Summary Report
-
-After processing all modules, output a summary:
-
-```markdown
-## Propagation Summary
-
-### Updated (existing roadmaps refreshed)
-- os/clavain — 5 monorepo items added
-- plugins/interflux — 3 monorepo items added
-
-### Created (new minimal roadmaps)
-- plugins/interline — 4 beads, new roadmap generated
-
-### Skipped (no roadmap, fewer than 3 beads)
-- plugins/interwatch — 1 bead (threshold: 3)
-
-### No Changes
-- plugins/interpub — 0 relevant monorepo beads
+## Recently Closed
+- <bead lines>
 ```
 
 ## Guidelines
 
-- Preserve existing roadmap content — only add/update the "From Interverse Roadmap" section
-- Don't duplicate items that already appear in the module's own roadmap sections
-- Use relative paths for cross-references between monorepo and module roadmaps
-- If the module's `docs/` directory doesn't exist, create it before writing the roadmap
-- Report what was done so the user can review changes
+- Module roadmaps are auto-generated — do not hand-edit them
+- Strategic context (deep dives, research agenda, dependency chains) belongs in the root Demarch Roadmap
+- The script is idempotent — safe to run repeatedly
+- Run after creating/closing beads to keep module views current
