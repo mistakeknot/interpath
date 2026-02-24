@@ -10,6 +10,14 @@ Sources degrade gracefully. No beads? Skip the backlog sections. No PRD? Skip th
 
 ## Installation
 
+First, add the [interagency marketplace](https://github.com/mistakeknot/interagency-marketplace) (one-time setup):
+
+```bash
+/plugin marketplace add mistakeknot/interagency-marketplace
+```
+
+Then install the plugin:
+
 ```bash
 /plugin install interpath
 ```
