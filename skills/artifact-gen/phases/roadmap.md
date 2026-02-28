@@ -111,14 +111,14 @@ Item records used in `roadmap.now`, `roadmap.next`, and `roadmap.later`:
 
 ```json
 {
-  "id": "iv-xxxx",
+  "id": "<bead-id>",
   "title": "Item title",
   "source": "bead|brainstorm|prd|plan|roadmap|other",
   "source_file": "docs/brainstorms/2026-..md",
   "phase": "now|next|later",
   "priority": "P0|P1|P2|P3|P4",
   "status": "open|blocked|in_progress",
-  "blockers": ["iv-aaaa", "iv-bbbb"],
+  "blockers": ["<blocker-id-1>", "<blocker-id-2>"],
   "module": "clavain",
   "notes": "short reason, dependencies, or key constraint"
 }
