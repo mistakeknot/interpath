@@ -55,6 +55,16 @@ SKILL.md (router)
 - `references/source-catalog.md` — discoverable source types with glob patterns
 - `references/output-templates.md` — structural templates per artifact type
 
+### Interwatch Integration
+
+interpath is a generator target for interwatch's drift-detection framework. When interwatch detects that a product doc (roadmap, PRD, vision) has drifted, it dispatches to `interpath:artifact-gen` with the artifact type. interpath does not know about drift scores or confidence tiers — it receives a generation request and produces an artifact. The contract is:
+
+- interwatch owns detection and dispatch
+- interpath owns generation
+- Clavain owns when to invoke (via `/interwatch:watch` or `auto-stop-actions.sh`)
+
+interwatch's `signal_templates` in `config/watchables.yaml` declare which signals map to interpath-generated doc types (roadmap, prd, vision).
+
 ## Component Conventions
 
 ### Skills
