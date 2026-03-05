@@ -95,3 +95,14 @@ Target: under 200 lines
 6. Next Actions
 
 Target: under 100 lines
+
+## CUJ Template
+
+1. Why This Journey Matters (motivation, stakes)
+2. The Journey (prose narrative — linear or exploratory)
+3. Success Signals (typed assertion table: Signal | Type | Assertion)
+4. Known Friction Points (current pain points)
+
+Signal types: measurable (automatable), observable (instrumented), qualitative (human judgment).
+
+Target: under 150 lines

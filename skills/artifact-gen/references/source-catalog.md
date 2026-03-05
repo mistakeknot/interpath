@@ -24,6 +24,7 @@ Discoverable source types for artifact generation. Each source has glob patterns
 | Commands | `commands/*.md` | Count + names |
 | Agents | `agents/*/*.md` | Count + names |
 | Companions | `~/.claude/plugins/cache/*/[name]/*/scripts/*.sh` | Installed status |
+| CUJs | `docs/cujs/*.md` | First 20 lines: journey name, actor, criticality |
 
 ## Monorepo Sources
 

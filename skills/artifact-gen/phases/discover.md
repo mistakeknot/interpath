@@ -81,6 +81,12 @@ for companion in interphase interline interflux interwatch interdoc; do
 done
 ```
 
+## Source 10: CUJ Documents
+
+- Pattern: `docs/cujs/*.md`
+- Read each file's first 20 lines for journey name and actor
+- Useful for cross-referencing when generating other artifacts (PRDs, roadmaps)
+
 ## Output
 
 Collect all discovered sources into a mental model. Note which sources were available and which were skipped. Pass this context to the artifact-specific phase.

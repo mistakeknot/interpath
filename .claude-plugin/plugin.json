@@ -1,7 +1,7 @@
 {
   "name": "interpath",
   "version": "0.2.3",
-  "description": "Product artifact generator — roadmaps, PRDs, vision docs, changelogs, and status reports from beads, brainstorms, and project state. Companion plugin for Clavain.",
+  "description": "Product artifact generator — roadmaps, PRDs, vision docs, changelogs, CUJs, and status reports from beads, brainstorms, and project state. Companion plugin for Clavain.",
   "author": {
     "name": "mistakeknot"
   },
@@ -11,6 +11,7 @@
     "prd",
     "vision",
     "changelog",
+    "cuj",
     "status-report",
     "documentation",
     "product-artifacts",
@@ -22,6 +23,7 @@
   "commands": [
     "./commands/all.md",
     "./commands/changelog.md",
+    "./commands/cuj.md",
     "./commands/prd.md",
     "./commands/propagate.md",
     "./commands/roadmap.md",

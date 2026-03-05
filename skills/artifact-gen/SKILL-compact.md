@@ -1,6 +1,6 @@
 # Artifact Generator (compact)
 
-Generate product artifacts from project state. Supports: **roadmap**, **monorepo-roadmap**, **propagate**, **prd**, **vision**, **changelog**, **status**.
+Generate product artifacts from project state. Supports: **roadmap**, **monorepo-roadmap**, **propagate**, **prd**, **vision**, **changelog**, **status**, **cuj**.
 
 ## Algorithm
 
@@ -31,6 +31,7 @@ Skip any source that's unavailable — degrade gracefully.
 | **vision** | `docs/${module}-vision.md` | What It Is, Core Conviction, Audience, Operating Principles, What's Working/Not |
 | **changelog** | `docs/CHANGELOG.md` | Group closed beads by version/date, categorize by type (feature/fix/chore) |
 | **status** | `docs/STATUS.md` | Health metrics, shipped this week, blockers, next priorities |
+| **cuj** | `docs/cujs/<journey-slug>.md` | Why It Matters, The Journey (prose), Success Signals (typed table), Known Friction Points |
 
 ### Step 3: Output
 

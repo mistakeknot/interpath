@@ -11,7 +11,7 @@ You are generating a product artifact. Follow these steps exactly.
 
 ## Step 1: Determine Artifact Type and Context
 
-The user wants one of: **roadmap**, **prd**, **vision**, **changelog**, **status**, **monorepo-roadmap**, **propagate**
+The user wants one of: **roadmap**, **prd**, **vision**, **changelog**, **status**, **cuj**, **monorepo-roadmap**, **propagate**
 
 If not clear from the invocation, ask which artifact to generate.
 
@@ -43,6 +43,7 @@ Based on the artifact type, read and follow the corresponding phase file:
 | vision | `artifact-gen/phases/vision.md` |
 | changelog | `artifact-gen/phases/changelog.md` |
 | status | `artifact-gen/phases/status.md` |
+| cuj | `artifact-gen/phases/cuj.md` |
 | monorepo-roadmap | `artifact-gen/phases/roadmap-monorepo.md` (template-then-fill) |
 | propagate | `artifact-gen/phases/roadmap-monorepo.md` → `artifact-gen/phases/propagate.md` |
 
