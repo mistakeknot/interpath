@@ -4,7 +4,7 @@ Product artifact generator for Claude Code.
 
 ## What this does
 
-interpath generates roadmaps, PRDs, vision documents, changelogs, and status reports by pulling from the actual project state: beads issues, brainstorm docs, existing plans, git history, plugin manifests. The artifacts stay connected to the real work rather than drifting into aspirational fiction, which is the usual failure mode of product documentation.
+interpath generates roadmaps, PRDs, vision documents, changelogs, CUJs, and status reports by pulling from the actual project state: beads issues, brainstorm docs, existing plans, git history, plugin manifests. The artifacts stay connected to the real work rather than drifting into aspirational fiction, which is the usual failure mode of product documentation.
 
 Sources degrade gracefully. No beads? Skip the backlog sections. No PRD? Skip that input. The artifact still generates with whatever context is available.
 
@@ -31,7 +31,9 @@ Companion plugin for [Clavain](https://github.com/mistakeknot/Clavain).
 /interpath:prd         Generate or refresh a Product Requirements Document
 /interpath:vision      Generate or refresh a vision document
 /interpath:changelog   Generate changelog from closed beads
+/interpath:cuj         Generate or refresh a Critical User Journey
 /interpath:status      Generate a point-in-time status report
+/interpath:all         Refresh all watchable artifacts at once
 ```
 
 ## How it works
