@@ -46,9 +46,16 @@ Reads the interwatch drift scan results and refreshes all documents at **High** 
    Refreshed: 2 | Skipped: 0
    ```
 
-6. **Re-run the drift scan** after refreshing to update state:
+6. **Re-run the drift scan** after refreshing to update state (if interwatch is available):
    ```bash
-   python3 interverse/interwatch/scripts/interwatch-scan.py > .interwatch/drift.json 2>/dev/null
+   # Try interwatch scan if installed
+   if command -v interwatch-scan >/dev/null 2>&1; then
+       interwatch-scan > .interwatch/drift.json 2>/dev/null
+   elif [ -f ".interwatch/scan.sh" ]; then
+       bash .interwatch/scan.sh > .interwatch/drift.json 2>/dev/null
+   else
+       echo "Note: interwatch scan not available — drift state may be stale" >&2
+   fi
    ```
 
 ## Options

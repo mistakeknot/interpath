@@ -18,8 +18,8 @@ If not clear from the invocation, ask which artifact to generate.
 ### Monorepo Auto-Detection
 
 If the user requests a **roadmap** and the CWD appears to be a monorepo root, automatically use the **monorepo-roadmap** path instead. A directory is a monorepo root if it has **both**:
-- A `.beads/` database
-- Subdirectories (`hub/*/`, `plugins/*/`, or `services/*/`) containing `.claude-plugin/plugin.json` files
+- A `.beads/` database (or beads CLI available with data)
+- At least one top-level subdirectory that itself contains sub-directories with `.claude-plugin/plugin.json` or `CLAUDE.md` files
 
 AND it does **not** itself have a `.claude-plugin/plugin.json` at its root.
 

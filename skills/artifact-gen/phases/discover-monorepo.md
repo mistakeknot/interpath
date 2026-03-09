@@ -1,6 +1,6 @@
 # Monorepo Discovery Phase
 
-Gather all available context from the Interverse monorepo. Each source is optional — skip gracefully if unavailable. This phase extends the single-project discovery with cross-module and aggregate data.
+Gather all available context from the monorepo. Each source is optional — skip gracefully if unavailable. This phase extends the single-project discovery with cross-module and aggregate data.
 
 ## Source 1: Monorepo Identity
 
@@ -12,20 +12,29 @@ head -80 CLAUDE.md 2>/dev/null || echo "monorepo CLAUDE.md: not available"
 
 ## Source 2: Module Inventory
 
-Scan `hub/*/`, `plugins/*/`, `services/*/` for plugin manifests. For each module, extract name, version, and description.
+Auto-detect directories that contain sub-modules (identified by `.claude-plugin/plugin.json` or `CLAUDE.md`). For each module, extract name, version, and description.
 
 ```bash
-for dir in hub/*/  plugins/*/  services/*/; do
-    manifest=""
-    if [ -f "${dir}.claude-plugin/plugin.json" ]; then
-        manifest="${dir}.claude-plugin/plugin.json"
-    elif [ -f "${dir}plugin.json" ]; then
-        manifest="${dir}plugin.json"
-    fi
-    if [ -n "$manifest" ]; then
-        echo "MODULE: ${dir%/}"
-        jq -r '"  name: \(.name) | version: \(.version) | desc: \(.description // "none")"' "$manifest" 2>/dev/null
-    fi
+# Auto-detect module parent directories
+for candidate_dir in */; do
+    [ -d "$candidate_dir" ] || continue
+    base="$(basename "$candidate_dir")"
+    [[ "$base" == .* || "$base" == "docs" || "$base" == "scripts" || "$base" == "node_modules" ]] && continue
+    for dir in "${candidate_dir}"*/; do
+        [ -d "$dir" ] || continue
+        manifest=""
+        if [ -f "${dir}.claude-plugin/plugin.json" ]; then
+            manifest="${dir}.claude-plugin/plugin.json"
+        elif [ -f "${dir}plugin.json" ]; then
+            manifest="${dir}plugin.json"
+        fi
+        if [ -n "$manifest" ]; then
+            echo "MODULE: ${dir%/}"
+            jq -r '"  name: \(.name) | version: \(.version) | desc: \(.description // "none")"' "$manifest" 2>/dev/null
+        elif [ -f "${dir}CLAUDE.md" ]; then
+            echo "MODULE: ${dir%/} (no manifest, has CLAUDE.md)"
+        fi
+    done
 done
 ```
 
@@ -33,24 +42,33 @@ Record the total module count.
 
 ## Source 3: Per-Module Roadmaps (Prefer JSON, canonical Markdown otherwise)
 
-For each discovered module, check for machine-readable roadmap artifacts first:
+For each discovered module from Source 2, check for machine-readable roadmap artifacts first:
 
 ```bash
-for dir in hub/*/  plugins/*/  services/*/; do
-    json="${dir}docs/roadmap.json"
-    if [ -f "$json" ]; then
-        echo "=== ROADMAP JSON: ${dir%/} ==="
-        cat "$json"
-        echo "---"
-        continue
-    fi
-    module="$(basename "${dir%/}")"
-    roadmap="${dir}docs/${module}-roadmap.md"
-    if [ -f "$roadmap" ]; then
-        echo "=== ROADMAP: ${dir%/} ==="
-        head -40 "$roadmap"
-        echo "---"
-    fi
+# Re-use the same auto-detection pattern from Source 2
+for candidate_dir in */; do
+    [ -d "$candidate_dir" ] || continue
+    base="$(basename "$candidate_dir")"
+    [[ "$base" == .* || "$base" == "docs" || "$base" == "scripts" || "$base" == "node_modules" ]] && continue
+    for dir in "${candidate_dir}"*/; do
+        [ -d "$dir" ] || continue
+        [ -f "${dir}.claude-plugin/plugin.json" ] || [ -f "${dir}CLAUDE.md" ] || continue
+        json="${dir}docs/roadmap.json"
+        if [ -f "$json" ]; then
+            echo "=== ROADMAP JSON: ${dir%/} ==="
+            cat "$json"
+            echo "---"
+            continue
+        fi
+        module="$(basename "${dir%/}")"
+        roadmap="${dir}docs/${module}-roadmap.md"
+        [ -f "$roadmap" ] || roadmap="${dir}docs/roadmap.md"
+        if [ -f "$roadmap" ]; then
+            echo "=== ROADMAP: ${dir%/} ==="
+            head -40 "$roadmap"
+            echo "---"
+        fi
+    done
 done
 ```
 
@@ -79,11 +97,18 @@ bd list --status=in_progress 2>/dev/null || echo "in-progress beads: not availab
 For each module with a `.beads/` directory, gather per-module stats:
 
 ```bash
-for dir in hub/*/  plugins/*/  services/*/; do
-    if [ -d "${dir}.beads" ]; then
-        echo "=== BEADS: ${dir%/} ==="
-        (cd "${dir}" && bd stats 2>/dev/null) || echo "  stats: not available"
-    fi
+# Re-use auto-detection from Source 2
+for candidate_dir in */; do
+    [ -d "$candidate_dir" ] || continue
+    base="$(basename "$candidate_dir")"
+    [[ "$base" == .* || "$base" == "docs" || "$base" == "scripts" || "$base" == "node_modules" ]] && continue
+    for dir in "${candidate_dir}"*/; do
+        [ -d "$dir" ] || continue
+        if [ -d "${dir}.beads" ]; then
+            echo "=== BEADS: ${dir%/} ==="
+            (cd "${dir}" && bd stats 2>/dev/null) || echo "  stats: not available"
+        fi
+    done
 done
 ```
 

@@ -1,10 +1,10 @@
 # Monorepo Roadmap Synthesis
 
-Using the monorepo discovery context, generate a unified Interverse roadmap that aggregates across all modules.
+Using the monorepo discovery context, generate a unified project roadmap that aggregates across all modules.
 
 ## Preferred Output Pair
 
-- `docs/interverse-roadmap.md` (human-readable)
+- `docs/<project>-roadmap.md` (human-readable)
 - `docs/roadmap.json` (machine-readable canonical output, source-of-truth)
 
 ## Templated Generation Flow
@@ -16,27 +16,38 @@ Most roadmap sections are **deterministic** — tables, bead lists, dependency c
 The calling command has already run `sync-roadmap-json.sh`. If `docs/roadmap.json` is missing, run:
 
 ```bash
-ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ROADMAP_SYNC="${CLAUDE_PLUGIN_ROOT}/scripts/sync-roadmap-json.sh"
 if [ -z "${CLAUDE_PLUGIN_ROOT:-}" ] || [ ! -x "$ROADMAP_SYNC" ]; then
-    ROADMAP_SYNC="$ROOT_DIR/plugins/interpath/scripts/sync-roadmap-json.sh"
+    echo "Warning: CLAUDE_PLUGIN_ROOT not set or sync script not found" >&2
+else
+    bash "$ROADMAP_SYNC"
 fi
-if [ ! -x "$ROADMAP_SYNC" ]; then
-    echo "Could not find interpath roadmap sync wrapper" >&2
-    exit 1
-fi
-"$ROADMAP_SYNC"
 ```
 
-### Step 2: Run the deterministic templater
+### Step 2: Run the deterministic templater (optional)
+
+If a template script exists (e.g., from a companion plugin like interleave), use it to produce a markdown file with `<!-- LLM:SECTION_NAME -->` placeholder markers. Otherwise, skip directly to the manual synthesis approach in Step 4's fallback.
 
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-TEMPLATE_SCRIPT="$ROOT_DIR/plugins/interleave/scripts/template-roadmap-md.sh"
-bash "$TEMPLATE_SCRIPT" "$ROOT_DIR/docs/roadmap.json"
+# Try interleave companion if available
+TEMPLATE_SCRIPT=""
+for _candidate in \
+    "${CLAUDE_PLUGIN_ROOT:-}/../interleave/scripts/template-roadmap-md.sh" \
+    "$ROOT_DIR/scripts/template-roadmap-md.sh"; do
+    if [ -f "$_candidate" ]; then
+        TEMPLATE_SCRIPT="$_candidate"
+        break
+    fi
+done
+if [ -n "$TEMPLATE_SCRIPT" ]; then
+    bash "$TEMPLATE_SCRIPT" "$ROOT_DIR/docs/roadmap.json"
+else
+    echo "No template script found — using manual synthesis" >&2
+fi
 ```
 
-This produces `docs/interverse-roadmap.md` with `<!-- LLM:SECTION_NAME -->` placeholder markers for sections needing LLM judgment. All other sections (header, ecosystem table, Now items, Later items, cross-deps, modules without roadmaps, keeping current) are fully rendered.
+If the template script runs, it produces a roadmap markdown with `<!-- LLM:SECTION_NAME -->` placeholder markers for sections needing LLM judgment. All other sections (header, ecosystem table, Now items, Later items, cross-deps, modules without roadmaps, keeping current) are fully rendered.
 
 ### Step 3: Read the templated output
 
@@ -80,7 +91,7 @@ Use this structure if Step 2 fails. This is the traditional approach where the L
 ### Header
 
 ```markdown
-# Interverse Roadmap
+# [Project Name] Roadmap
 
 **Modules:** [count] | **Open beads:** [count] | **Last updated:** [today's date]
 **Structure:** [`CLAUDE.md`](../CLAUDE.md)

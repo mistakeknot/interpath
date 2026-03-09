@@ -10,7 +10,7 @@ Product artifact generator — 1 skill, 8 commands, 0 agents, 0 hooks, 0 MCP ser
 
 ```bash
 # Test locally
-claude --plugin-dir /root/projects/Interverse/plugins/interpath
+claude --plugin-dir /path/to/interpath
 
 # Validate structure
 ls skills/*/SKILL.md | wc -l          # Should be 1
