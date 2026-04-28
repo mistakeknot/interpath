@@ -1,6 +1,6 @@
 ---
 name: roadmap
-description: Generate or refresh a project roadmap from beads state, brainstorms, plans, and project context. Auto-detects monorepo roots for ecosystem-wide roadmaps.
+description: Generate or refresh a project roadmap from beads, brainstorms, plans, and context. Auto-detects monorepo roots for ecosystem-wide roadmaps.
 ---
 
 # Generate Roadmap

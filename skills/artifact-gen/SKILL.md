@@ -1,6 +1,6 @@
 ---
 name: artifact-gen
-description: Generate product artifacts (roadmaps, PRDs, vision docs, changelogs, status reports) from beads state, brainstorms, and project context. Routes to artifact-specific phases after shared discovery.
+description: Generate product artifacts (roadmaps, PRDs, vision, changelogs, status) from beads, brainstorms, and project context. Phase-routed after shared discovery.
 ---
 
 # Artifact Generator
