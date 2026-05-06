@@ -48,6 +48,16 @@ interpath is a generator target for interwatch's drift-detection framework. When
 
 interwatch's `signal_templates` in `config/watchables.yaml` declare which signals map to interpath-generated doc types (roadmap, prd, vision, cuj).
 
+#### Architectural cycle (intentional)
+
+The lattice's structural scan flags `interpath ↔ interwatch` as the only plugin cycle that doesn't route through clavain (see `docs/research/2026-05-06-lattice-architectural-findings.md`). The cycle is a **sensor/generator pattern**, not coupling debt:
+
+- **Forward edge** — interwatch dispatches `interpath:artifact-gen` when drift is detected
+- **Back edge** — `/interpath:all` reads `.interwatch/drift.json` to know which docs to refresh in batch
+- **Shared contract** — `.interwatch/drift.json` is a published file contract, not a code dependency
+
+Refactoring would require introducing a third coordinator owning the drift state, which is strictly more complex without separating any real concern. The cycle should be re-evaluated only if the file contract grows to bind lifecycle semantics (start/stop ordering) — at which point the right move is to extract a `FileContract` entity type into the lattice itself.
+
 ## Component Conventions
 
 ### Skills
