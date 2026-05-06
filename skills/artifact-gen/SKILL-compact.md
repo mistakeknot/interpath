@@ -33,9 +33,9 @@ Skip any source that's unavailable — degrade gracefully.
 | **status** | `docs/STATUS.md` | Health metrics, shipped this week, blockers, next priorities |
 | **cuj** | `docs/cujs/<journey-slug>.md` | Why It Matters, The Journey (prose), Success Signals (typed table), Known Friction Points |
 
-### Step 3: Output
+### Step 3: Output (Canonical Witness)
 
-Write to `docs/` in the project root. If file exists, show diff summary before overwriting.
+Always write to the exact canonical path in the table above. Overwrite in place — never suffix the filename with a date or ISO timestamp (e.g., NOT `sylveste-roadmap-2026-05-06.md`). If a date/timestamp-suffixed orphan from a previous interpath run exists, move it to `docs/.archive/${YYYY-MM-DD}/` before writing. Do NOT touch hand-curated parallel docs that share a related name (e.g., `docs/roadmap-v1.md` as release-goals planning) — those are intentional separate documents. Diff summary before overwrite is courtesy, not a gate. Rule and rationale: sylveste-a4oj.7 / SCRIP-2 (medieval scriptorium canonical-witness pattern).
 
 **Header format:**
 ```markdown

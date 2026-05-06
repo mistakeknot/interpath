@@ -2,10 +2,12 @@
 
 Using the discovered sources, generate a roadmap document with these sections:
 
-## Preferred Output Pair
+## Canonical Output Pair
 
 - `docs/${module}-roadmap.md` (human-readable)
 - `docs/roadmap.json` (machine-readable canonical output)
+
+Always write to these exact paths. Overwrite in place; never suffix the filename with a date or ISO timestamp (e.g., NOT `sylveste-roadmap-2026-05-06.md`, NOT `roadmap-20260506T1430.md`). If a date/timestamp-suffixed orphan from a previous interpath run exists, move it to `docs/.archive/${YYYY-MM-DD}/` before writing. Do NOT touch hand-curated parallel docs that share a related name (e.g., `docs/roadmap-v1.md` as release-goals planning, `docs/vision-2030.md` as long-horizon strategy) — those are intentional separate documents, not orphan witnesses. See `SKILL.md` § Step 4 (Canonical Witness) for the full disambiguation rules (sylveste-a4oj.7).
 
 ## Output Structure
 

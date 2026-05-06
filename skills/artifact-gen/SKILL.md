@@ -49,9 +49,29 @@ Based on the artifact type, read and follow the corresponding phase file:
 
 For **propagate**: first generate the monorepo roadmap, then run the propagation phase to push items to sub-module roadmaps.
 
-## Step 4: Output
+## Step 4: Output (Canonical Witness)
 
-Write the generated artifact to the appropriate location (typically `docs/` in the project root). If the file already exists, show a diff summary before overwriting.
+Each artifact type has **exactly one canonical path**. Always overwrite that path; never write a dated, versioned, or branched variant alongside it. This is the canonical-witness rule (sylveste-a4oj.7 / SCRIP-2): without it, multiple "witnesses" of the same artifact accumulate and downstream readers consume different versions.
+
+### Canonical paths
+
+| Type | Canonical Path | Notes |
+|------|----------------|-------|
+| roadmap | `docs/${module}-roadmap.md` + `docs/roadmap.json` | `${module}` = repo/project short name (e.g., `sylveste`, `interverse`). |
+| prd | `docs/PRD.md` | Single project. |
+| vision | `docs/${module}-vision.md` | Same `${module}` convention as roadmap. |
+| changelog | `docs/CHANGELOG.md` or `CHANGELOG.md` (project-dependent) | Whichever already exists; if neither, prefer `CHANGELOG.md` at project root. |
+| status | `docs/STATUS.md` | Single project. |
+| cuj | `docs/cujs/<cuj-slug>.md` | Per-CUJ file; each CUJ's slug is its canonical witness. |
+| monorepo-roadmap | `docs/${module}-roadmap.md` at the monorepo root (e.g., `docs/interverse-roadmap.md`) | |
+| propagate | `docs/roadmap.md` in each sub-module | |
+
+### Overwrite rules
+
+1. **Always write to the canonical path.** Don't suffix the filename with the date, ISO timestamp, or run identifier (`roadmap-2026-05-06.md`, `vision-20260506T1430.md`, etc.). Versioning is git's job, not the filename's.
+2. **Detect orphan interpath witnesses before regenerating.** An orphan is a file matching the pattern `docs/${module}-{roadmap,vision}-<DATE>.md` or `docs/${module}-{roadmap,vision}-<TIMESTAMP>.md` (date/timestamp suffix on a name that's otherwise the canonical pattern) — i.e., something a previous interpath run produced under an aberrant naming variant. If found, move the orphan to `docs/.archive/${YYYY-MM-DD}/` before writing the new canonical file. **Important:** do NOT touch hand-curated parallel docs that share a related name but are clearly separate intentional documents (e.g., `docs/roadmap-v1.md` as a release-goals planning doc, `docs/vision-2030.md` as a long-horizon strategy doc). Heuristics: a hand-curated doc is tracked in git for many commits, has a substantively different first paragraph, or is referenced from CLAUDE.md/AGENTS.md/README.md. When in doubt, leave the file alone and report it to the user instead of archiving.
+3. **Diff summary before overwrite is courtesy, not a gate.** When the canonical file exists, you may print a brief diff summary (e.g., "+15 lines, -8 lines, 3 new beads referenced") before writing. This is informational; do not branch into "should I overwrite?" — the answer is always yes for canonical paths.
+4. **Git is the version archive.** A reader who wants prior versions runs `git log -- docs/sylveste-roadmap.md` and `git show <sha>:docs/sylveste-roadmap.md`. The on-disk file is always the latest.
 
 ## Step 5: Consistency Check (Roadmap only)
 

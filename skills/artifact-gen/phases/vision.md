@@ -2,6 +2,10 @@
 
 Using the discovered sources, generate or refresh a vision document.
 
+## Canonical Output Path
+
+Always write to `docs/${module}-vision.md` (e.g., `docs/sylveste-vision.md`). Overwrite in place; never suffix the filename with a date or ISO timestamp. If a date/timestamp-suffixed orphan from a previous interpath run exists (e.g., `docs/sylveste-vision-2026-05-06.md`), move it to `docs/.archive/${YYYY-MM-DD}/` before writing. Do NOT touch hand-curated parallel docs that share a related name (e.g., `docs/vision-2030.md` as long-horizon strategy) — those are intentional separate documents. See SKILL.md § Step 4 (Canonical Witness) for the full disambiguation rules (sylveste-a4oj.7).
+
 ## Output Structure
 
 ### Header
