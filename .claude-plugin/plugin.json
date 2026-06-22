@@ -29,10 +29,5 @@
     "./commands/roadmap.md",
     "./commands/status.md",
     "./commands/vision.md"
-  ],
-  "peerDependencies": [
-    "interdoc",
-    "interleave",
-    "interwatch"
   ]
 }
