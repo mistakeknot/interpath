@@ -9,6 +9,28 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
+BACKLOG_OUTPUT="${2:-$ROOT_DOCS_DIR/backlog.md}"
+
+# Cloud-guard: bd is unavailable in cloud sessions; this script would emit
+# warnings and produce a roadmap.json with all bead links missing. Skip
+# cleanly instead.
+#
+# Portable by omission: the library lives in the consuming project, not in
+# this plugin, so a project without one simply proceeds. Sourced rather than
+# required precisely so interpath keeps working outside a monorepo.
+GUARD_LIB="$ROOT_DIR/scripts/lib-cloud-guard.sh"
+if [[ -r "$GUARD_LIB" ]]; then
+    # shellcheck source=/dev/null
+    source "$GUARD_LIB"
+    if cloud_session; then
+        cloud_log_skip "sync-roadmap-json"
+        exit 0
+    fi
+    if ! command -v bd >/dev/null 2>&1; then
+        workstation_log_missing_bd "sync-roadmap-json"
+        exit 0
+    fi
+fi
 
 # Read project config from .interwatch/project.yaml if available
 _PROJECT_YAML="$ROOT_DIR/.interwatch/project.yaml"
@@ -124,7 +146,13 @@ collect_items_from_beads() {
             phase: (if .priority <= 1 then "now" elif .priority == 2 then "next" else "later" end),
             priority: ("P" + (.priority | tostring)),
             status: (
-                if .dependency_count > 0 and .status != "closed" then "blocked"
+                # `deferred` must be tested BEFORE the dependency check, and
+                # must exist at all. Without this branch every deferred bead
+                # falls through to "open" and is counted as live work: on the
+                # Sylveste tracker that inflated open_beads from 481 to 499,
+                # exactly the 18 beads whose status is deferred.
+                if .status == "deferred" then "deferred"
+                elif .dependency_count > 0 and .status != "closed" then "blocked"
                 elif .status == "in_progress" then "in_progress"
                 elif .status == "blocked" then "blocked"
                 else "open"
@@ -132,7 +160,16 @@ collect_items_from_beads() {
             ),
             source: "beads",
             source_file: "beads",
-            blocked_by: [],
+            # Live dependency IDs, not a placeholder. The empty literal made
+            # blocked_items fall back to counting only items whose own status
+            # said "blocked", and dropped every dependency edge — 127 of them
+            # on the Sylveste tracker — so the roadmap could show what was
+            # blocked but never what it was waiting on.
+            blocked_by: [
+                .dependencies[]?
+                | select(.type == "blocks")
+                | .depends_on_id
+            ],
             notes: (.title | gsub("^\\[[^\\]]+\\]\\s*"; ""))
         }
     ' >> "$ITEMS_FILE" 2>/dev/null || true
@@ -227,6 +264,14 @@ fi
 
 mkdir -p "$(dirname "$OUTPUT")"
 
+# NOT `date -u +...%:z`. `%:z` is a GNU date extension: on Linux it yields
+# "+00:00", but BSD/macOS date passes ":z" through literally and produces
+# "2026-08-07T17:19:36:z", which is not parseable as ISO 8601. Downstream
+# freshness checks then read the roadmap as undated and withdraw it from
+# ranking — on one machine only, which is the worst way for this to fail.
+# `-u` already forces UTC, so a literal Z is both correct and portable.
+GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
 open_beads="$(jq -s '[.[] | select(.status == "open" or .status == "in_progress" or .status == "blocked")] | unique_by(.id) | length' "$ITEMS_FILE")"
 blocked_items="$(jq -s '[.[] | select((.status=="blocked") or ((.blocked_by | length) > 0))] | unique_by(.id) | length' "$ITEMS_FILE")"
 
@@ -243,7 +288,7 @@ jq -s '.' "$NO_ROADMAP_FILE" > "$TMP_DIR/no_roadmap.json"
 if ! jq -n \
     --arg project "$ROADMAP_PROJECT" \
     --arg kind "${ROADMAP_PROJECT}-monorepo-roadmap" \
-    --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%S%:z)" \
+    --arg generated_at "$GENERATED_AT" \
     --argjson module_count "$module_count" \
     --argjson open_beads "$open_beads" \
     --argjson blocked "$blocked_items" \
@@ -263,3 +308,22 @@ fi
 
 jq -M . "$OUTPUT" >"${OUTPUT}.tmp" && mv "${OUTPUT}.tmp" "$OUTPUT"
 echo "Wrote roadmap JSON: $OUTPUT"
+
+# The backlog is the human-readable half of the same generation. Splitting it
+# out was how the two copies came to disagree: the monorepo grew this step in
+# July while the plugin copy kept emitting roadmap.json alone, so whether you
+# got a backlog depended on which script had run.
+#
+# Rendered from $OUTPUT rather than from the item stream on purpose — it is a
+# view of the roadmap, not a second derivation of it, and cannot drift from
+# the JSON it accompanies.
+RENDER_BACKLOG="${BASH_SOURCE[0]%/*}/render_backlog.py"
+if [[ -r "$RENDER_BACKLOG" ]] && command -v python3 >/dev/null 2>&1; then
+    if python3 "$RENDER_BACKLOG" "$OUTPUT" "$BACKLOG_OUTPUT"; then
+        echo "Wrote backlog Markdown: $BACKLOG_OUTPUT"
+    else
+        echo "Warning: backlog render failed; roadmap.json is still current" >&2
+    fi
+elif ! command -v python3 >/dev/null 2>&1; then
+    echo "Warning: python3 not found, skipping backlog render" >&2
+fi
