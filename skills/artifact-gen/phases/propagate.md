@@ -7,9 +7,9 @@ Auto-generate module-level roadmap files from beads state. Module roadmaps are d
 Run the `generate-module-roadmaps.sh` script from the interpath plugin:
 
 ```bash
-PROPAGATE_SCRIPT="${CLAUDE_PLUGIN_ROOT}/scripts/generate-module-roadmaps.sh"
-if [ -z "${CLAUDE_PLUGIN_ROOT:-}" ] || [ ! -x "$PROPAGATE_SCRIPT" ]; then
-    echo "Warning: CLAUDE_PLUGIN_ROOT not set or script not found" >&2
+PROPAGATE_SCRIPT="${INTERPATH_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}/scripts/generate-module-roadmaps.sh"
+if [ -z "${INTERPATH_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}" ] || [ ! -x "$PROPAGATE_SCRIPT" ]; then
+    echo "Warning: interpath root not resolved or script not found" >&2
     exit 1
 fi
 bash "$PROPAGATE_SCRIPT"

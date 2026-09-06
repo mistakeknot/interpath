@@ -16,9 +16,9 @@ Most roadmap sections are **deterministic** — tables, bead lists, dependency c
 The calling command has already run `sync-roadmap-json.sh`. If `docs/roadmap.json` is missing, run:
 
 ```bash
-ROADMAP_SYNC="${CLAUDE_PLUGIN_ROOT}/scripts/sync-roadmap-json.sh"
-if [ -z "${CLAUDE_PLUGIN_ROOT:-}" ] || [ ! -x "$ROADMAP_SYNC" ]; then
-    echo "Warning: CLAUDE_PLUGIN_ROOT not set or sync script not found" >&2
+ROADMAP_SYNC="${INTERPATH_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}/scripts/sync-roadmap-json.sh"
+if [ -z "${INTERPATH_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}" ] || [ ! -x "$ROADMAP_SYNC" ]; then
+    echo "Warning: interpath root not resolved or sync script not found" >&2
 else
     bash "$ROADMAP_SYNC"
 fi
@@ -33,7 +33,7 @@ ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 # Try interleave companion if available
 TEMPLATE_SCRIPT=""
 for _candidate in \
-    "${CLAUDE_PLUGIN_ROOT:-}/../interleave/scripts/template-roadmap-md.sh" \
+    "${INTERPATH_ROOT:-${CLAUDE_PLUGIN_ROOT:-}}/../interleave/scripts/template-roadmap-md.sh" \
     "$ROOT_DIR/scripts/template-roadmap-md.sh"; do
     if [ -f "$_candidate" ]; then
         TEMPLATE_SCRIPT="$_candidate"
@@ -51,7 +51,10 @@ If the template script runs, it produces a roadmap markdown with `<!-- LLM:SECTI
 
 ### Step 3: Read the templated output
 
-Read `docs/interverse-roadmap.md`. It will contain up to 3 LLM placeholder markers. If the template script populated all module highlights from `roadmap.json`, there may be fewer than 3.
+Read `docs/${module}-roadmap.md`, using the actual monorepo short name. If the
+templater targets another project's filename, use a supported output option or
+manual synthesis at the canonical path. The output may contain up to 3 LLM
+placeholder markers; populated module highlights may reduce that count.
 
 ### Step 4: Fill LLM placeholders
 
@@ -78,7 +81,7 @@ For each `<!-- LLM:SECTION_NAME -->` block found in the output:
 
 ### Step 5: Write final output
 
-Replace each `<!-- LLM:SECTION_NAME ... END LLM:SECTION_NAME -->` block with the subagent output. Write the final `docs/interverse-roadmap.md`.
+Replace each `<!-- LLM:SECTION_NAME ... END LLM:SECTION_NAME -->` block with the subagent output. Write the final `docs/${module}-roadmap.md` using the same monorepo short name.
 
 ### Fallback: Manual synthesis
 

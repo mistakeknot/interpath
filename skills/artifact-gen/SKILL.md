@@ -5,9 +5,23 @@ description: Generate product artifacts (roadmaps, PRDs, vision, changelogs, sta
 
 # Artifact Generator
 
+In Codex, resolve this `SKILL.md` symlink. Set `INTERPATH_ROOT` to two directories
+above the skill directory and resolve phase/reference files against the skill
+directory. In Claude Code, `INTERPATH_ROOT` may use `CLAUDE_PLUGIN_ROOT`.
+Run plugin scripts by absolute path while keeping the target project's working
+directory. If a required script is missing, report the gap; do not install it
+as part of artifact generation.
+
 <!-- compact: SKILL-compact.md — if it exists in this directory, load it instead of following the multi-file instructions below. The compact version contains the same algorithm in a single file. -->
 
 You are generating a product artifact. Follow these steps exactly.
+
+The canonical paths below are defaults within the user's authorized artifact
+scope. An explicit destination, template, or preservation instruction takes
+precedence. Only archive a dated file when evidence identifies it as an earlier
+generated copy of this same artifact and that cleanup is in scope; otherwise
+leave it in place and report the ambiguity. Existing unrelated local edits are
+not permission to overwrite or move their files.
 
 ## Step 1: Determine Artifact Type and Context
 
