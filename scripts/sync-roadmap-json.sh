@@ -10,6 +10,7 @@ ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ROOT_DOCS_DIR="$ROOT_DIR/docs"
 OUTPUT="${1:-$ROOT_DOCS_DIR/roadmap.json}"
 BACKLOG_OUTPUT="${2:-$ROOT_DOCS_DIR/backlog.md}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Cloud-guard: bd is unavailable in cloud sessions; this script would emit
 # warnings and produce a roadmap.json with all bead links missing. Skip
@@ -19,23 +20,25 @@ BACKLOG_OUTPUT="${2:-$ROOT_DOCS_DIR/backlog.md}"
 # this plugin, so a project without one simply proceeds. Sourced rather than
 # required precisely so interpath keeps working outside a monorepo.
 GUARD_LIB="$ROOT_DIR/scripts/lib-cloud-guard.sh"
-if [[ -r "$GUARD_LIB" ]]; then
+if [[ -r "$GUARD_LIB" && -z "${ROADMAP_BEADS_FILE:-}" ]]; then
     # shellcheck source=/dev/null
     source "$GUARD_LIB"
     if cloud_session; then
         cloud_log_skip "sync-roadmap-json"
-        exit 0
+        exit 69
     fi
     if ! command -v bd >/dev/null 2>&1; then
         workstation_log_missing_bd "sync-roadmap-json"
-        exit 0
+        exit 69
     fi
 fi
 
 # Read project config from .interwatch/project.yaml if available
 _PROJECT_YAML="$ROOT_DIR/.interwatch/project.yaml"
-if [ -z "${ROADMAP_PROJECT:-}" ] && [ -f "$_PROJECT_YAML" ] && command -v yq >/dev/null 2>&1; then
-    ROADMAP_PROJECT="$(yq -r '.project // ""' "$_PROJECT_YAML")"
+if [ -f "$_PROJECT_YAML" ] && command -v yq >/dev/null 2>&1; then
+    if [ -z "${ROADMAP_PROJECT:-}" ]; then
+        ROADMAP_PROJECT="$(yq -r '.project // ""' "$_PROJECT_YAML")"
+    fi
     if [ -z "${ROADMAP_SCAN_DIRS:-}" ]; then
         _yaml_dirs="$(yq -r '.roadmap.scan_dirs // [] | join(":")' "$_PROJECT_YAML")"
         [ -n "$_yaml_dirs" ] && ROADMAP_SCAN_DIRS="$_yaml_dirs"
@@ -115,69 +118,18 @@ add_no_roadmap_module() {
 # --- Beads-derived item collection ---
 
 collect_items_from_beads() {
-    if ! command -v bd >/dev/null 2>&1; then
-        echo "Warning: bd not found, skipping bead-derived items" >&2
-        return
+    local snapshot="${ROADMAP_BEADS_FILE:-$TMP_DIR/beads.json}"
+    if [[ -z "${ROADMAP_BEADS_FILE:-}" ]]; then
+        require bd
+        bd --readonly --sandbox list --json --limit 0 --all > "$snapshot"
     fi
-
-    local beads_json
-    beads_json="$(bd list --json --limit 0 --all 2>/dev/null)" || return
-
-    local count
-    count="$(echo "$beads_json" | jq 'length')"
-    [ "$count" -gt 0 ] || return
-
-    echo "$beads_json" | jq -c '
-        .[] |
-        select(.id != null and .title != null) |
-        select(.status != "closed") |
-        {
-            module: (
-                if (.title | test("^\\[")) then
-                    (.title | capture("^\\[(?<m>[^\\]]+)\\]") | .m | split("/")[0])
-                elif (.labels // [] | any(startswith("mod:"))) then
-                    (.labels | map(select(startswith("mod:"))) | .[0] | ltrimstr("mod:"))
-                else
-                    env.ROADMAP_PROJECT
-                end
-            ),
-            id: .id,
-            title: (.title | gsub("^\\[[^\\]]+\\]\\s*"; "")),
-            phase: (if .priority <= 1 then "now" elif .priority == 2 then "next" else "later" end),
-            priority: ("P" + (.priority | tostring)),
-            status: (
-                # `deferred` must be tested BEFORE the dependency check, and
-                # must exist at all. Without this branch every deferred bead
-                # falls through to "open" and is counted as live work: on the
-                # Sylveste tracker that inflated open_beads from 481 to 499,
-                # exactly the 18 beads whose status is deferred.
-                if .status == "deferred" then "deferred"
-                elif .dependency_count > 0 and .status != "closed" then "blocked"
-                elif .status == "in_progress" then "in_progress"
-                elif .status == "blocked" then "blocked"
-                else "open"
-                end
-            ),
-            source: "beads",
-            source_file: "beads",
-            # Live dependency IDs, not a placeholder. The empty literal made
-            # blocked_items fall back to counting only items whose own status
-            # said "blocked", and dropped every dependency edge — 127 of them
-            # on the Sylveste tracker — so the roadmap could show what was
-            # blocked but never what it was waiting on.
-            blocked_by: [
-                .dependencies[]?
-                | select(.type == "blocks")
-                | .depends_on_id
-            ],
-            notes: (.title | gsub("^\\[[^\\]]+\\]\\s*"; ""))
-        }
-    ' >> "$ITEMS_FILE" 2>/dev/null || true
+    python3 "$SCRIPT_DIR/roadmap_snapshot.py" "$snapshot" "$ROADMAP_PROJECT" "${ROADMAP_EXPECTED_PREFIX:-}" > "$ITEMS_FILE"
 }
 
 # === MAIN ===
 
 require jq
+require python3
 
 TMP_DIR="$(mktemp -d)"
 chmod 700 "$TMP_DIR"
@@ -301,29 +253,11 @@ if ! jq -n \
     --slurpfile cross_module_dependencies "$TMP_DIR/cross.json" \
     --slurpfile modules_without "$TMP_DIR/no_roadmap.json" \
     '{project:$project,kind:$kind,generated_at:$generated_at,module_count:$module_count,open_beads:$open_beads,blocked:$blocked,modules:$modules[0],snapshot:$modules[0],roadmap:{now:$roadmap_now[0],next:$roadmap_next[0],later:$roadmap_later[0]},module_highlights:$module_highlights[0],research_agenda:$research_agenda[0],cross_module_dependencies:$cross_module_dependencies[0],modules_without_roadmaps:$modules_without[0],dependency_graph:$cross_module_dependencies[0]}' \
-    >"$OUTPUT"; then
+    >"$TMP_DIR/roadmap.json"; then
     echo "Failed to write $OUTPUT" >&2
     exit 1
 fi
 
-jq -M . "$OUTPUT" >"${OUTPUT}.tmp" && mv "${OUTPUT}.tmp" "$OUTPUT"
-echo "Wrote roadmap JSON: $OUTPUT"
-
-# The backlog is the human-readable half of the same generation. Splitting it
-# out was how the two copies came to disagree: the monorepo grew this step in
-# July while the plugin copy kept emitting roadmap.json alone, so whether you
-# got a backlog depended on which script had run.
-#
-# Rendered from $OUTPUT rather than from the item stream on purpose — it is a
-# view of the roadmap, not a second derivation of it, and cannot drift from
-# the JSON it accompanies.
-RENDER_BACKLOG="${BASH_SOURCE[0]%/*}/render_backlog.py"
-if [[ -r "$RENDER_BACKLOG" ]] && command -v python3 >/dev/null 2>&1; then
-    if python3 "$RENDER_BACKLOG" "$OUTPUT" "$BACKLOG_OUTPUT"; then
-        echo "Wrote backlog Markdown: $BACKLOG_OUTPUT"
-    else
-        echo "Warning: backlog render failed; roadmap.json is still current" >&2
-    fi
-elif ! command -v python3 >/dev/null 2>&1; then
-    echo "Warning: python3 not found, skipping backlog render" >&2
-fi
+python3 "$SCRIPT_DIR/publish_roadmap.py" "$TMP_DIR/roadmap.json" "$OUTPUT" "$BACKLOG_OUTPUT" "$SCRIPT_DIR/render_backlog.py"
+echo "Verified roadmap JSON: $OUTPUT"
+echo "Verified backlog Markdown: $BACKLOG_OUTPUT"
